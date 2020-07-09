@@ -1,0 +1,9 @@
+{% extends "crawler/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <ol>
+            {% for link in links %}
+                <li class="text-primary"><a href="{{ link }}">{{ link }}</a></li>
+            {% endfor %}
+        </ol>
+{% endblock content %}
