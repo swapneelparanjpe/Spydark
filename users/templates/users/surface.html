@@ -1,11 +1,11 @@
 {% extends "crawler/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="content-section">
+    <div class="content-section w-50">
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group text-primary">
-                <legend class="border-bottom pb-2 mb-3 form-legend">Enter your URL</legend>
+                <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Enter your URL</legend>
                 {{ form|crispy }}
             </fieldset>
             <div class="form-group">

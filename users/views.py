@@ -8,7 +8,6 @@ from urllib.parse import urlencode
 # for beautiful soup
 from bs4 import BeautifulSoup
 import requests
-import csv
 
 def register(request):
     if request.method =='POST':
@@ -67,7 +66,10 @@ def crawled(request):
 
         for anchor_tags in soup.find_all('a'):
             try:
-                link = anchor_tags['href']
+                try:
+                    link = "https://" + anchor_tags['href'].split("https://")[1]  
+                except:
+                    link = "http://" + anchor_tags['href'].split("http://")[1]
                 links.append(link)
                 no_links += 1
                 if no_links>depth:
