@@ -8,6 +8,8 @@ from urllib.parse import urlencode
 # for beautiful soup
 from bs4 import BeautifulSoup
 import requests
+# for database
+import sqlite3
 
 def register(request):
     if request.method =='POST':
@@ -125,6 +127,22 @@ def dark(request):
 # Crawling thorugh URLs    
 @login_required
 def crawled(request):
+    
+    conn = sqlite3.connect("crawler_database.db")
+    c = conn.cursor()
+    #c.execute('''CREATE TABLE harvested_links (
+    #            links text
+    #            )''')
+    try:
+        c.execute('DELETE FROM harvested_links')
+        conn.commit()
+    except:
+        pass
+    
+    def add_link(link):
+        with conn:
+            c.execute("INSERT INTO harvested_links VALUES (:link)", {'link':link})
+
     url = request.GET.get('url')
     depth = int(request.GET.get('depth'))
 
@@ -142,6 +160,8 @@ def crawled(request):
                     link = "https://" + anchor_tags['href'].split("https://")[1]  
                 except:
                     link = "http://" + anchor_tags['href'].split("http://")[1]
+
+                add_link(link)
                 links.append(link)
             except Exception as e:
                 pass 
@@ -149,5 +169,6 @@ def crawled(request):
         db_pointer += 1
         source = requests.get(links[db_pointer]).text
         soup = BeautifulSoup(source, 'lxml')
+    conn.close()
         
     return render(request, 'users/crawled.html', {'links':links})
