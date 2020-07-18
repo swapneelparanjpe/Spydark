@@ -32,7 +32,17 @@ body {
     background: #121212;
     margin: 20px auto;
   }
-
+  .content-section1 {
+    background: #121212;
+    
+  }
+  .start{
+    color: #dedede;
+    cursor: pointer;
+    border-color: #dedede;
+    background-image: linear-gradient(to right, #030107 , #3700b3);
+  }
+  
   .form-legend{
     font: 150%;
     text-align: center;

@@ -1,7 +1,27 @@
 {% extends "crawler/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="content-section w-50">
+<details class= "start border rounded ">
+  <summary class ="welcome  "> Welcome to the surface web ! Click to know more !</summary>
+  <p class="inshort ">The Surface Web is the content provided on the world wide web and it is 
+  what you access regularly. Our Crawler here provides you various links related to your search! 
+  To begin your search just type in the seed url. And if you are confused where to start just refer
+  the few links provided by us!
+  </p>
+</details>
+<details class="start float-right w-25 mt-5 border  rounded">
+<summary class = "welcome">Click here for seed urls!</summary>
+  <p class="inshort1"><a href='#' onclick="enterInUrlForm(this)">https://www.youtube.com/</a>
+  <a href='#' onclick="enterInUrlForm(this)">https://www.facebook.com/</a>
+  <a href='#' onclick="enterInUrlForm(this)">https://www.google.co.in/</a>
+  <a href='#' onclick="enterInUrlForm(this)">https://timesofindia.indiatimes.com/</a>
+  <a href='#' onclick="enterInUrlForm(this)">https://in.yahoo.com/</a>
+  <a href='#' onclick="enterInUrlForm(this)">https://www.amazon.in/</a>
+  <a href='#' onclick="enterInUrlForm(this)">https://www.flipkart.com/</a>
+
+  </p>
+</details>
+    <div class="content-section1 w-50 mt-5 ">
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group text-primary">

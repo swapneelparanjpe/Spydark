@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from users import views as user_views
 from django.contrib.auth import views as auth_views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('', include('crawler.urls')),
@@ -29,3 +30,4 @@ urlpatterns = [
     path('crawled/', user_views.crawled, name='crawled'),
     path('admin/', admin.site.urls),
 ]
+urlpatterns += staticfiles_urlpatterns()
