@@ -17,3 +17,13 @@ class SearchURL(forms.Form):
 class SearchKeyword(forms.Form):
     keyword = forms.CharField(label='Keyword', help_text='Enter keyword')
     depth_key = forms.IntegerField(label='Depth of search',help_text='Enter number of pages to be crawled (Default: 3)', required=False)
+
+class SearchKeywordPlt(forms.Form):
+    p_choices = [
+        (1, 'Facebook'),
+        (2, 'Instagram'),
+        (3, 'Twitter'),
+    ]
+    keyword = forms.CharField(label='Keyword', help_text='Enter keyword')
+    platform = forms.CharField(label='Platform', help_text='Choose platform to crawl on', widget=forms.Select(choices=p_choices))
+    depth_key = forms.IntegerField(label='Depth of search',help_text='Enter number of pages to be crawled (Default: 3)', required=False)

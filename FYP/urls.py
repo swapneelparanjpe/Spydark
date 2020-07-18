@@ -27,6 +27,8 @@ urlpatterns = [
     path('welcome/', user_views.welcome, name='welcome'),
     path('profile/', user_views.profile, name='profile'),
     path('surface/', user_views.surface, name='surface'),
+    path('deep/', user_views.deep, name='deep'),
+    path('dark/', user_views.dark, name='dark'),
     path('crawled/', user_views.crawled, name='crawled'),
     path('admin/', admin.site.urls),
 ]
