@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserRegisterForm, SearchURL
+from .forms import UserRegisterForm, SearchURL, SearchKeyword 
 from django.contrib.auth.decorators import login_required
 # for passing arguments in redirect
 from django.urls import reverse
@@ -32,14 +32,14 @@ def profile(request):
 @login_required
 def surface(request):
     if request.method =='POST':
-        form = SearchURL(request.POST)
-        if form.is_valid():
-            url = form.cleaned_data.get('url')
-            pages = form.cleaned_data.get('depth')
+        form1 = SearchURL(request.POST)
+        if form1.is_valid():
+            url = form1.cleaned_data.get('url')
+            pages = form1.cleaned_data.get('depth_url')
             if pages:
                 depth = pages
             else:
-                depth = 100
+                depth = 3
             messages.info(request, f'These are your results...')
             base_url = reverse('crawled')  # 1 /products/
             query_string =  urlencode({'url': url, 'depth':depth})  # 2 category=42
@@ -47,8 +47,18 @@ def surface(request):
             return redirect(url)
             #return redirect('crawled', key=url)
     else:
-        form = SearchURL()
-    return render(request, 'users/surface.html', {'form':form})
+        form1 = SearchURL()
+
+    if request.method =='POST':
+        form2 = SearchKeyword(request.POST)
+        if form2.is_valid():
+            keyword = form2.cleaned_data.get('keyword')
+            pages = form.cleaned_data.get('depth_key')
+            print("1: ", keyword, "2:", pages)
+    else:
+        form2 = SearchKeyword()
+
+    return render(request, 'users/surface.html', {'form1':form1, 'form2':form2})
     
 # Crawling thorugh URLs    
 @login_required
@@ -58,11 +68,11 @@ def crawled(request):
 
     source = requests.get(url).text
     soup = BeautifulSoup(source, 'lxml')
-    no_links = 1
+    no_pages = 1
     db_pointer = 0
     links = []
     
-    while(no_links <= depth):
+    while(no_pages <= depth):
 
         for anchor_tags in soup.find_all('a'):
             try:
@@ -71,11 +81,9 @@ def crawled(request):
                 except:
                     link = "http://" + anchor_tags['href'].split("http://")[1]
                 links.append(link)
-                no_links += 1
-                if no_links>depth:
-                    break
             except Exception as e:
                 pass 
+        no_pages += 1
         db_pointer += 1
         source = requests.get(links[db_pointer]).text
         soup = BeautifulSoup(source, 'lxml')

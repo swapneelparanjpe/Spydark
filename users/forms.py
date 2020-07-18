@@ -12,4 +12,8 @@ class UserRegisterForm(UserCreationForm):
 
 class SearchURL(forms.Form):
     url = forms.URLField(label='URL', help_text='Enter seed URL')
-    depth = forms.IntegerField(label='Depth of search',help_text='Enter number of URLs to be crawled (Default: 100)', required=False)
+    depth_url = forms.IntegerField(label='Depth of search',help_text='Enter number of pages to be crawled (Default: 3)', required=False)
+    
+class SearchKeyword(forms.Form):
+    keyword = forms.CharField(label='Keyword', help_text='Enter keyword')
+    depth_key = forms.IntegerField(label='Depth of search',help_text='Enter number of pages to be crawled (Default: 3)', required=False)

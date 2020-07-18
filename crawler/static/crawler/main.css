@@ -30,12 +30,10 @@ body {
   
   .content-section {
     background: #121212;
+    width: 50%;
     margin: 20px auto;
   }
-  .content-section1 {
-    background: #121212;
-    
-  }
+  
   .start{
     color: #dedede;
     cursor: pointer;
