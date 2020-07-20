@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterForm, SearchURL, SearchKeyword, SearchKeywordPlt
 from django.contrib.auth.decorators import login_required
-from .crawled_results import LinkHarvest
+from .utils import LinkHarvest, Instagram
 # for passing arguments in redirect
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -43,7 +43,8 @@ def surface(request):
 
             messages.info(request, f'These are your results...')
             base_url = reverse('crawled')
-            query_string =  urlencode({'url': url, 'depth':depth})
+            code = "surface_url"
+            query_string =  urlencode({'url': url, 'depth':depth, 'code':code})
             url = '{}?{}'.format(base_url, query_string)
             return redirect(url)
     else:
@@ -55,8 +56,15 @@ def surface(request):
         form2 = SearchKeywordPlt(request.POST)
         if form2.is_valid():
             keyword = form2.cleaned_data.get('keyword')
-            pages = form.cleaned_data.get('depth_key')
-            print("1: ", keyword, "2:", pages)
+            platform = form2.cleaned_data.get('platform')
+            depth = form2.cleaned_data.get('depth_key') 
+            code = "surface_key"
+            messages.info(request, f'These are your results...')
+            base_url = reverse('crawled')
+            query_string =  urlencode({'keyword': keyword, 'platform':platform, 'depth':depth, 'code':code})
+            url = '{}?{}'.format(base_url, query_string)
+            return redirect(url)
+
     else:
         form2 = SearchKeywordPlt()
     # <<<<<<<<<<<< Form2
@@ -89,7 +97,7 @@ def deep(request):
         form2 = SearchKeyword(request.POST)
         if form2.is_valid():
             keyword = form2.cleaned_data.get('keyword')
-            pages = form.cleaned_data.get('depth_key')
+            pages = form2.cleaned_data.get('depth_key')
             print("1: ", keyword, "2:", pages)
     else:
         form2 = SearchKeyword()
@@ -123,7 +131,7 @@ def dark(request):
         form2 = SearchKeyword(request.POST)
         if form2.is_valid():
             keyword = form2.cleaned_data.get('keyword')
-            pages = form.cleaned_data.get('depth_key')
+            pages = form2.cleaned_data.get('depth_key')
             print("1: ", keyword, "2:", pages)
     else:
         form2 = SearchKeyword()
@@ -134,10 +142,21 @@ def dark(request):
 # Crawling thorugh URLs    
 @login_required
 def crawled(request):
-    url = request.GET.get('url')
-    depth = int(request.GET.get('depth'))
+    code = request.GET.get('code')
 
-    crawler = LinkHarvest(url, depth)
-    links = crawler.crawl() 
+    if code == 'surface_url':
+        url = request.GET.get('url')
+        depth = int(request.GET.get('depth'))
+        crawler = LinkHarvest(url, depth)
+        links = crawler.crawl()
+
+    if code == 'surface_key':
+        keyword = request.GET.get('keyword')
+        depth = int(request.GET.get('depth'))
+        platform = int(request.GET.get('platform'))
+
+        if platform == 2:
+            ig = Instagram(keyword, depth)
+            links = ig.instacrawl()
 
     return render(request, 'users/crawled.html', {'links':links})

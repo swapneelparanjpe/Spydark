@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 import sqlite3
+from selenium import webdriver
+import time
+import sys
 
 class LinkHarvest:
     def __init__(self, url, depth):
@@ -51,3 +54,28 @@ class LinkHarvest:
         conn.close()
         
         return links
+
+class Instagram:
+    def __init__(self, keyword, depth):
+        self.keyword = keyword
+        self.depth = depth
+        self.driver = webdriver.Chrome("D:\Swapneel\Python\\finalyearproject\chromedriver_win32\chromedriver.exe")
+
+    def instacrawl(self):
+        
+        url = "https://www.instagram.com/explore/tags/" + self.keyword + "/"
+        self.driver.get(url)
+        time.sleep(2)
+        for i in range(self.depth):
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        link_elements = self.driver.find_elements_by_xpath("//*[@class='v1Nh3 kIKUG  _bz0w']/a")
+        links = []
+        for link in link_elements:
+            href = link.get_attribute('href')
+            links.append(href)
+        self.driver.quit()
+
+        return links
+            
+    
+        
