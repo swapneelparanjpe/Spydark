@@ -1,4 +1,5 @@
 {% extends "crawler/base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
         <ol>
@@ -8,7 +9,7 @@
         </ol>
         <br><br>
         <div class="text-center">
-            <a class="btn btn-primary btn-lg text-light" href="{% url 'welcome' %}">Return to Home page</a>
+            <a class="btn btn-primary btn-lg text-light" href="{% url 'dashboard' %}">Proceed to Dashboard</a>
         </div>
         <br><br><br><br>
 {% endblock content %}

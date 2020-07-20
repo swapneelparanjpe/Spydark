@@ -2,14 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterForm, SearchURL, SearchKeyword, SearchKeywordPlt
 from django.contrib.auth.decorators import login_required
+from .crawled_results import LinkHarvest
 # for passing arguments in redirect
 from django.urls import reverse
 from urllib.parse import urlencode
-# for beautiful soup
-from bs4 import BeautifulSoup
-import requests
-# for database
-import sqlite3
+
 
 def register(request):
     if request.method =='POST':
@@ -29,10 +26,11 @@ def welcome(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    return render(request, 'users/dashboard.html')
 
 @login_required
 def surface(request):
+    # Form1 >>>>>>>>>>>>
     if request.method =='POST':
         form1 = SearchURL(request.POST)
         if form1.is_valid():
@@ -42,15 +40,17 @@ def surface(request):
                 depth = pages
             else:
                 depth = 3
+
             messages.info(request, f'These are your results...')
-            base_url = reverse('crawled')  # 1 /products/
-            query_string =  urlencode({'url': url, 'depth':depth})  # 2 category=42
-            url = '{}?{}'.format(base_url, query_string)  # 3 /products/?category=42
+            base_url = reverse('crawled')
+            query_string =  urlencode({'url': url, 'depth':depth})
+            url = '{}?{}'.format(base_url, query_string)
             return redirect(url)
-            #return redirect('crawled', key=url)
     else:
         form1 = SearchURL()
+    # <<<<<<<<<<<< Form1
 
+    # Form2 >>>>>>>>>>>>
     if request.method =='POST':
         form2 = SearchKeywordPlt(request.POST)
         if form2.is_valid():
@@ -59,11 +59,13 @@ def surface(request):
             print("1: ", keyword, "2:", pages)
     else:
         form2 = SearchKeywordPlt()
+    # <<<<<<<<<<<< Form2
 
     return render(request, 'users/surface.html', {'form1':form1, 'form2':form2})
  
 @login_required
 def deep(request):
+    # Form1 >>>>>>>>>>>>
     if request.method =='POST':
         form1 = SearchURL(request.POST)
         if form1.is_valid():
@@ -74,14 +76,15 @@ def deep(request):
             else:
                 depth = 3
             messages.info(request, f'These are your results...')
-            base_url = reverse('crawled')  # 1 /products/
-            query_string =  urlencode({'url': url, 'depth':depth})  # 2 category=42
-            url = '{}?{}'.format(base_url, query_string)  # 3 /products/?category=42
+            base_url = reverse('crawled')
+            query_string =  urlencode({'url': url, 'depth':depth})
+            url = '{}?{}'.format(base_url, query_string)
             return redirect(url)
-            #return redirect('crawled', key=url)
     else:
         form1 = SearchURL()
+    # <<<<<<<<<<<< Form1
 
+    # Form2 >>>>>>>>>>>>
     if request.method =='POST':
         form2 = SearchKeyword(request.POST)
         if form2.is_valid():
@@ -90,11 +93,13 @@ def deep(request):
             print("1: ", keyword, "2:", pages)
     else:
         form2 = SearchKeyword()
+    # <<<<<<<<<<<< Form2
 
     return render(request, 'users/deep.html', {'form1':form1, 'form2':form2})
     
 @login_required
 def dark(request):
+    # Form1 >>>>>>>>>>>>
     if request.method =='POST':
         form1 = SearchURL(request.POST)
         if form1.is_valid():
@@ -105,14 +110,15 @@ def dark(request):
             else:
                 depth = 3
             messages.info(request, f'These are your results...')
-            base_url = reverse('crawled')  # 1 /products/
-            query_string =  urlencode({'url': url, 'depth':depth})  # 2 category=42
-            url = '{}?{}'.format(base_url, query_string)  # 3 /products/?category=42
+            base_url = reverse('crawled')
+            query_string =  urlencode({'url': url, 'depth':depth})
+            url = '{}?{}'.format(base_url, query_string)
             return redirect(url)
-            #return redirect('crawled', key=url)
     else:
         form1 = SearchURL()
+    # <<<<<<<<<<<< Form1
 
+    # Form2 >>>>>>>>>>>>
     if request.method =='POST':
         form2 = SearchKeyword(request.POST)
         if form2.is_valid():
@@ -121,54 +127,17 @@ def dark(request):
             print("1: ", keyword, "2:", pages)
     else:
         form2 = SearchKeyword()
+    # <<<<<<<<<<<< Form2
 
     return render(request, 'users/dark.html', {'form1':form1, 'form2':form2})
 
 # Crawling thorugh URLs    
 @login_required
 def crawled(request):
-    
-    conn = sqlite3.connect("crawler_database.db")
-    c = conn.cursor()
-    #c.execute('''CREATE TABLE harvested_links (
-    #            links text
-    #            )''')
-    try:
-        c.execute('DELETE FROM harvested_links')
-        conn.commit()
-    except:
-        pass
-    
-    def add_link(link):
-        with conn:
-            c.execute("INSERT INTO harvested_links VALUES (:link)", {'link':link})
-
     url = request.GET.get('url')
     depth = int(request.GET.get('depth'))
 
-    source = requests.get(url).text
-    soup = BeautifulSoup(source, 'lxml')
-    no_pages = 1
-    db_pointer = 0
-    links = []
-    
-    while(no_pages <= depth):
+    crawler = LinkHarvest(url, depth)
+    links = crawler.crawl() 
 
-        for anchor_tags in soup.find_all('a'):
-            try:
-                try:
-                    link = "https://" + anchor_tags['href'].split("https://")[1]  
-                except:
-                    link = "http://" + anchor_tags['href'].split("http://")[1]
-
-                add_link(link)
-                links.append(link)
-            except Exception as e:
-                pass 
-        no_pages += 1
-        db_pointer += 1
-        source = requests.get(links[db_pointer]).text
-        soup = BeautifulSoup(source, 'lxml')
-    conn.close()
-        
     return render(request, 'users/crawled.html', {'links':links})
