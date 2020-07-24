@@ -7,4 +7,11 @@
     <a class="btn btn-lg btn-primary"  role="button" href="#">Go To 3</a>
     <a class="btn btn-lg btn-primary"  role="button" href="#">Go To 4</a>
 </div>
+<br><br>
+<ul>
+    {% for link in links %}
+        <li class="text-primary"><a href="{{ link }}">{{ link }}</a></li>
+    {% endfor %}
+</ul>
+<br><br>
 {% endblock content %}

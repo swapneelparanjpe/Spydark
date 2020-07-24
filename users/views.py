@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterForm, SearchURL, SearchKeyword, SearchKeywordPlt
 from django.contrib.auth.decorators import login_required
-from .utils import LinkHarvest, Instagram
+from .utils import Dashboard, LinkHarvest, Instagram, Twitter
 # for passing arguments in redirect
 from django.urls import reverse
 from urllib.parse import urlencode
@@ -25,8 +25,10 @@ def welcome(request):
     return render(request, 'users/welcome.html')
 
 @login_required
-def profile(request):
-    return render(request, 'users/dashboard.html')
+def dashboard(request):
+    dash = Dashboard()
+    links = dash.read_db()
+    return render(request, 'users/dashboard.html', {'links':links})
 
 @login_required
 def surface(request):
@@ -57,7 +59,11 @@ def surface(request):
         if form2.is_valid():
             keyword = form2.cleaned_data.get('keyword')
             platform = form2.cleaned_data.get('platform')
-            depth = form2.cleaned_data.get('depth_key') 
+            pages = form2.cleaned_data.get('depth_key')
+            if pages:
+                depth = pages
+            else:
+                depth = 3 
             code = "surface_key"
             messages.info(request, f'These are your results...')
             base_url = reverse('crawled')
@@ -158,5 +164,8 @@ def crawled(request):
         if platform == 2:
             ig = Instagram(keyword, depth)
             links = ig.instacrawl()
+        if platform == 3:
+            tweet = Twitter(keyword, depth)
+            links = tweet.twittercrawl()
 
     return render(request, 'users/crawled.html', {'links':links})
