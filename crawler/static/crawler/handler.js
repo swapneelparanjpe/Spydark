@@ -13,5 +13,8 @@ function radio(x){
     }
 }
 
+function loading(){
+    document.getElementById('loader').style.visibility = 'visible';
+}
 
 

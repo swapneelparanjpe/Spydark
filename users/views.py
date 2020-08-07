@@ -6,6 +6,7 @@ from .utils import Dashboard, LinkHarvest, Instagram, Twitter
 # for passing arguments in redirect
 from django.urls import reverse
 from urllib.parse import urlencode
+from datetime import datetime
 
 
 def register(request):
@@ -148,6 +149,7 @@ def dark(request):
 # Crawling thorugh URLs    
 @login_required
 def crawled(request):
+    start_time = datetime.now()
     code = request.GET.get('code')
 
     if code == 'surface_url':
@@ -167,5 +169,9 @@ def crawled(request):
         if platform == 3:
             tweet = Twitter(keyword, depth)
             links = tweet.twittercrawl()
+    
+    end_time = datetime.now()
+    diff = end_time - start_time
+    time_elapsed = str(diff)[2:11]
 
-    return render(request, 'users/crawled.html', {'links':links})
+    return render(request, 'users/crawled.html', {'links':links, 'time_elapsed':time_elapsed})

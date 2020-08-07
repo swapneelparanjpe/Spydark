@@ -2,52 +2,52 @@ body {
     background: #121212;
     color: #333333;
     margin-top: 5rem;
-  }
-  
-  h1, h2, h3, h4, h5, h6, .links {
+}
+
+h1, h2, h3, h4, h5, h6, .links {
     color: #dedede;
-  }
-  
-  ul {
+}
+
+ul {
     margin: 0;
-  }
-  
-  .bg-steel {
+}
+
+.bg-steel {
     background-color: #3700b3;
-  }
-  
-  .site-header .navbar-nav .nav-link {
+}
+
+.site-header .navbar-nav .nav-link {
     color: #cbd5db;
-  }
-  
-  .site-header .navbar-nav .nav-link:hover {
+}
+
+.site-header .navbar-nav .nav-link:hover {
     color: #ffffff;
-  }
-  
-  .site-header .navbar-nav .nav-link.active {
+}
+
+.site-header .navbar-nav .nav-link.active {
     font-weight: 500;
-  }
-  
-  .content-section {
+}
+
+.content-section {
     background: #121212;
     width: 50%;
     margin: 20px auto;
-  }
-  
-  .start{
+}
+
+.start{
     color: #dedede;
     cursor: pointer;
     border-color: #dedede;
     background-image: linear-gradient(to right, #030107 , #3700b3);
-  }
-  
-  .form-legend{
+}
+
+.form-legend{
     font: 150%;
     text-align: center;
     color: #0000ff;
-  }
+}
 
-  .loader{
+#loader{
     position: fixed;
     z-index: 99;
     top: 0;
@@ -58,63 +58,25 @@ body {
     justify-content: center;
     align-items: center;
     background-color: #000000;
-  }
+    visibility: hidden;
+}
 
-  .loader.hidden{
-    animation: fadeout 1s;
-    animation-fill-mode: forwards;
-  }
+.time{
+    position: fixed;
+    bottom: 2%;
+    right:2%;
+    border: solid #ff0000;
+    background-color: #000000;
+    font-size:80%;
+    text-align: center;
+    padding: 0 1%;
+    animation: anim 3s;    
+    padding-top: 0.5%;
+}
 
-  @keyframes fadeout{
-    100%{
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
+@keyframes anim {
+    0%{opacity: 0;}
+    100%{opacity: 1}
+}
 
-  .article-title {
-    color: #444444;
-  }
-  
-  a.article-title:hover {
-    color: #428bca;
-    text-decoration: none;
-  }
-  
-  .article-content {
-    white-space: pre-line;
-  }
-  
-  .article-img {
-    height: 65px;
-    width: 65px;
-    margin-right: 16px;
-  }
-  
-  .article-metadata {
-    padding-bottom: 1px;
-    margin-bottom: 4px;
-    border-bottom: 1px solid #e3e3e3
-  }
-  
-  .article-metadata a:hover {
-    color: #333;
-    text-decoration: none;
-  }
-  
-  .article-svg {
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-  }
-  
-  .account-img {
-    height: 125px;
-    width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
-  }
-  
-  .account-heading {
-    font-size: 2.5rem;
-  }
+

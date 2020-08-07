@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import time
 
 class Dashboard:
@@ -69,7 +70,9 @@ class Instagram:
     def __init__(self, keyword, depth):
         self.keyword = keyword
         self.depth = depth
-        self.driver = webdriver.Chrome("chromedriver_win32\chromedriver.exe")
+        self.chrome_options = Options()
+        self.chrome_options.add_argument("--headless")
+        self.driver = webdriver.Chrome("chromedriver_win32\chromedriver.exe", chrome_options=self.chrome_options)
 
     def instacrawl(self):
         
@@ -94,7 +97,9 @@ class Twitter:
     def __init__(self, keyword, depth):
         self.keyword = keyword
         self.depth = depth
-        self.driver = webdriver.Chrome("chromedriver_win32\chromedriver.exe")
+        self.chrome_options = Options()
+        self.chrome_options.add_argument("--headless")
+        self.driver = webdriver.Chrome("chromedriver_win32\chromedriver.exe", chrome_options=self.chrome_options)
 
     def twittercrawl(self):
         

@@ -5,7 +5,7 @@ url = "http://127.0.0.1:8000/login"
 username = "..."
 password = "..."
 
-browser = webdriver.Chrome("D:\Swapneel\Python\FYP\chromedriver_win32\chromedriver.exe")
+browser = webdriver.Chrome("chromedriver_win32\chromedriver.exe")
 browser.get(url)
 
 input_fields = browser.find_elements_by_xpath("//input")

@@ -2,14 +2,18 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
-        <ol>
-            {% for link in links %}
-                <li class="text-primary"><a href="{{ link }}">{{ link }}</a></li>
-            {% endfor %}
-        </ol>
-        <br><br>
-        <div class="text-center">
-            <a class="btn btn-primary btn-lg text-light" href="{% url 'dashboard' %}">Proceed to Dashboard</a>
-        </div>
-        <br><br><br><br>
+    <ol>
+        {% for link in links %}
+            <li class="text-primary"><a href="{{ link }}">{{ link }}</a></li>
+        {% endfor %}
+    </ol>
+    <br><br>
+    <div class="text-center">
+        <a class="btn btn-primary btn-lg text-light" href="{% url 'dashboard' %}">Proceed to Dashboard</a>
+    </div>
+    <br><br><br><br>
+    <div class="time">
+        <h6>Time elapsed</h6>
+        <h4>{{ time_elapsed }}</h4>
+    </div>
 {% endblock content %}
