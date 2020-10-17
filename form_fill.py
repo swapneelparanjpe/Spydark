@@ -8,7 +8,7 @@ firstname = "..."
 lastname = "..."
 email = "..."
 
-browser = webdriver.Chrome("chromedriver_win32\chromedriver.exe")
+browser = webdriver.Chrome("chromedriver_win32\\chromedriver.exe")
 browser.get(url)
 
 input_fields = browser.find_elements_by_xpath("//input")

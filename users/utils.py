@@ -35,7 +35,7 @@ class LinkHarvest:
         try:
             c.execute('DELETE FROM harvested_links')
             conn.commit()
-        except:
+        except Exception as e:
             pass
 
 
@@ -51,7 +51,7 @@ class LinkHarvest:
                 try:
                     try:
                         link = "https://" + anchor_tags['href'].split("https://")[1]  
-                    except:
+                    except Exception as e:
                         link = "http://" + anchor_tags['href'].split("http://")[1]
 
                     add_link(link)
@@ -72,7 +72,7 @@ class Instagram:
         self.depth = depth
         self.chrome_options = Options()
         self.chrome_options.add_argument("--headless")
-        self.driver = webdriver.Chrome("chromedriver_win32\chromedriver.exe", chrome_options=self.chrome_options)
+        self.driver = webdriver.Chrome("chromedriver_win32\\chromedriver.exe", chrome_options=self.chrome_options)
 
     def instacrawl(self):
         
@@ -87,7 +87,7 @@ class Instagram:
             try:
                 href = link.get_attribute('href')
                 links.append(href)
-            except:
+            except Exception as e:
                 pass
         self.driver.quit()
 
@@ -99,7 +99,7 @@ class Twitter:
         self.depth = depth
         self.chrome_options = Options()
         self.chrome_options.add_argument("--headless")
-        self.driver = webdriver.Chrome("chromedriver_win32\chromedriver.exe", chrome_options=self.chrome_options)
+        self.driver = webdriver.Chrome("chromedriver_win32\\chromedriver.exe", chrome_options=self.chrome_options)
 
     def twittercrawl(self):
         
@@ -119,7 +119,7 @@ class Twitter:
             try:
                 href = link.get_attribute('href')
                 links.append(href)
-            except:
+            except Exception as e:
                 pass
         self.driver.quit()
 

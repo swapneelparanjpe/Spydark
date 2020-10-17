@@ -5,7 +5,7 @@ url = "http://127.0.0.1:8000/login"
 username = "..."
 password = "..."
 
-browser = webdriver.Chrome("chromedriver_win32\chromedriver.exe")
+browser = webdriver.Chrome("chromedriver_win32\\chromedriver.exe")
 browser.get(url)
 
 input_fields = browser.find_elements_by_xpath("//input")
@@ -22,6 +22,6 @@ for id_ in ids:
         elem = browser.find_element_by_id(id_)
         elem.send_keys(entry[i])
         i+=1
-    except:
+    except Exception as e:
         pass
 submit_btn.send_keys(Keys.ENTER)  
