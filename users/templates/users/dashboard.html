@@ -1,16 +1,13 @@
 {% extends "crawler/base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block content %}
-<div class="btn-group-vertical">
-    <a class="btn btn-lg btn-primary"  role="button" href="#">Go To 1</a>
-    <a class="btn btn-lg btn-primary"  role="button" href="#">Go To 2</a>
-    <a class="btn btn-lg btn-primary"  role="button" href="#">Go To 3</a>
-    <a class="btn btn-lg btn-primary"  role="button" href="#">Go To 4</a>
-</div>
+
+<img src="{% static 'users/words.png' %}" alt="Wordcloud">
 <br><br>
 <ul>
     {% for link in links %}
-        <li class="text-primary"><a href="{{ link }}">{{ link }}</a></li>
+        <li class="text-primary"><a href="{{ link }}" target="_blank">{{ link }}</a></li>
     {% endfor %}
 </ul>
 <br><br>

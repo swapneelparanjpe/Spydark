@@ -3,11 +3,14 @@ from django.contrib import messages
 from .forms import UserRegisterForm, SearchURL, SearchKeyword, SearchKeywordPlt
 from django.contrib.auth.decorators import login_required
 from .utils import Dashboard, LinkHarvest, Instagram, Twitter
+from .minicrawlbot import MiniCrawlbot
+
 # for passing arguments in redirect
 from django.urls import reverse
 from urllib.parse import urlencode
 from datetime import datetime
 
+table = None
 
 def register(request):
     if request.method =='POST':
@@ -28,7 +31,7 @@ def welcome(request):
 @login_required
 def dashboard(request):
     dash = Dashboard()
-    links = dash.read_db()
+    links = dash.read_db("instagramdb")
     return render(request, 'users/dashboard.html', {'links':links})
 
 @login_required
@@ -139,7 +142,16 @@ def dark(request):
         if form2.is_valid():
             keyword = form2.cleaned_data.get('keyword')
             pages = form2.cleaned_data.get('depth_key')
-            print("1: ", keyword, "2:", pages)
+            if pages:
+                depth = pages
+            else:
+                depth = 3 
+            code = "dark_key"
+            messages.info(request, f'These are your results...')
+            base_url = reverse('crawled')
+            query_string =  urlencode({'keyword': keyword, 'depth':depth, 'code':code})
+            url = '{}?{}'.format(base_url, query_string)
+            return redirect(url)
     else:
         form2 = SearchKeyword()
     # <<<<<<<<<<<< Form2
@@ -151,25 +163,35 @@ def dark(request):
 def crawled(request):
     start_time = datetime.now()
     code = request.GET.get('code')
+    global table 
 
     if code == 'surface_url':
         url = request.GET.get('url')
         depth = int(request.GET.get('depth'))
         crawler = LinkHarvest(url, depth)
         links = crawler.crawl()
+        table = "surfacedb"
 
     if code == 'surface_key':
         keyword = request.GET.get('keyword')
         depth = int(request.GET.get('depth'))
         platform = int(request.GET.get('platform'))
 
-        if platform == 2:
+        if platform == 1:
             ig = Instagram(keyword, depth)
             links = ig.instacrawl()
-        if platform == 3:
+            table = "instagramdb"
+        if platform == 2:
             tweet = Twitter(keyword, depth)
             links = tweet.twittercrawl()
-    
+
+    if code == 'dark_key':
+        keyword = request.GET.get('keyword')
+        depth = int(request.GET.get('depth'))
+
+        minicrawl = MiniCrawlbot()
+        links = minicrawl.tor_crawler(keyword, depth)
+        
     end_time = datetime.now()
     diff = end_time - start_time
     time_elapsed = str(diff)[2:11]

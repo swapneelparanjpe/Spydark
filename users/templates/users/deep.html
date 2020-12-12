@@ -1,6 +1,8 @@
 {% extends "crawler/base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+
     <details class= "start border rounded ">
         <summary class="h4 pl-2"> Welcome to the deep web ! Click to know more !</summary>
         <p>
@@ -46,7 +48,7 @@
                     {{ form1|crispy }}
                 </fieldset>
                 <div class="form-group ml-5">
-                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                    <button class="btn btn-outline-primary" onclick = "loading()" type="submit">Search</button>
                 </div>
             </form>
         </div>
@@ -60,10 +62,14 @@
                     {{ form2|crispy }}
                 </fieldset>
                 <div class="form-group">
-                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                    <button class="btn btn-outline-primary" onclick = "loading()" type="submit">Search</button>
                 </div>
             </form>
         </div>
-        
     </div>
+
+    <div id="loader">
+        <img src="{% static 'crawler/loader.gif' %}" alt="Loading...">
+    </div>
+    
 {% endblock content %}
