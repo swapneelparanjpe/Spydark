@@ -1,7 +1,13 @@
-Download the requirements:-
-pip install -r requirements.txt
+## Download the requirements:-
 
-Run the development server:-
+```
+pip install -r requirements.txt
+```
+
+## Run the development server:-
+
+```python
 python manage.py runserver
+```
   
-Enter the localhost on your browser
+## Enter the localhost on your browser

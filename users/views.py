@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterForm, SearchURL, SearchKeyword, SearchKeywordPlt
 from django.contrib.auth.decorators import login_required
-from .utils import Dashboard, LinkHarvest, Instagram, Twitter
+from .utils import Dashboard, SurfaceURL, Instagram, Twitter
 from .minicrawlbot import MiniCrawlbot
 
 # for passing arguments in redirect
@@ -10,7 +10,8 @@ from django.urls import reverse
 from urllib.parse import urlencode
 from datetime import datetime
 
-table = None
+database = None
+collection = None
 
 def register(request):
     if request.method =='POST':
@@ -31,7 +32,7 @@ def welcome(request):
 @login_required
 def dashboard(request):
     dash = Dashboard()
-    links = dash.read_db("instagramdb")
+    links = dash.read_db(database, collection)
     return render(request, 'users/dashboard.html', {'links':links})
 
 @login_required
@@ -163,27 +164,30 @@ def dark(request):
 def crawled(request):
     start_time = datetime.now()
     code = request.GET.get('code')
-    global table 
+    global database
+    global collection 
 
     if code == 'surface_url':
         url = request.GET.get('url')
         depth = int(request.GET.get('depth'))
-        crawler = LinkHarvest(url, depth)
-        links = crawler.crawl()
-        table = "surfacedb"
+        crawler = SurfaceURL(url, depth)
+        links = crawler.surfacecrawl()
 
     if code == 'surface_key':
         keyword = request.GET.get('keyword')
         depth = int(request.GET.get('depth'))
         platform = int(request.GET.get('platform'))
+        collection = keyword
 
         if platform == 1:
             ig = Instagram(keyword, depth)
             links = ig.instacrawl()
-            table = "instagramdb"
+            database = "instagramdb"
+            
         if platform == 2:
             tweet = Twitter(keyword, depth)
             links = tweet.twittercrawl()
+            database = "twitterdb"
 
     if code == 'dark_key':
         keyword = request.GET.get('keyword')
