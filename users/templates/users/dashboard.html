@@ -2,13 +2,14 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
+    
+    <img src="{% static 'users/words_image.png' %}" alt="Wordcloud">
+    <br><br>
+    <ul>
+        {% for link in links %}
+            <li class="text-primary"><a href="{{ link }}" target="_blank">{{ link }}</a></li>
+        {% endfor %}
+    </ul>
+    <br><br>
 
-<img src="{% static 'users/words_image.png' %}" alt="Wordcloud">
-<br><br>
-<ul>
-    {% for link in links %}
-        <li class="text-primary"><a href="{{ link }}" target="_blank">{{ link }}</a></li>
-    {% endfor %}
-</ul>
-<br><br>
 {% endblock content %}

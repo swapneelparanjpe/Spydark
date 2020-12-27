@@ -12,6 +12,13 @@ ul {
     margin: 0;
 }
 
+.error-img{
+    position: fixed;
+    top: 25%;
+    right:10%;
+    width: 40%;
+}
+
 .bg-steel {
     background-color: #3700b3;
 }

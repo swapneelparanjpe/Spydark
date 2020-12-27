@@ -1,0 +1,13 @@
+{% extends "crawler/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+    <h1 class="">An error occurred</h1>
+    <br><br>
+    <a class="btn btn-outline-primary btn-lg" href="{% url 'surface' %}">Try Surface crawling</a><br><br>
+    <a class="btn btn-outline-primary btn-lg" href="{% url 'dark' %}">Try Dark web crawling</a><br><br>
+    <a class="btn btn-outline-primary btn-lg" href="{% url 'welcome' %}">Return to Home page</a><br><br>
+    <img class="error-img" src="{% static 'crawler/error.gif' %}" alt="Error">    
+
+{% endblock content %}

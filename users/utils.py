@@ -16,6 +16,8 @@ def connect_mongodb(database, keyword):
 
 class Dashboard:
     def read_db(self, database, collection):
+        if database is None or collection is None:
+            return False
         links = []
         coll = connect_mongodb(database, collection)
         for x in coll.find():

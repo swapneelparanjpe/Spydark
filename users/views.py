@@ -33,7 +33,11 @@ def welcome(request):
 def dashboard(request):
     dash = Dashboard()
     links = dash.read_db(database, collection)
-    return render(request, 'users/dashboard.html', {'links':links})
+    if links:
+        return render(request, 'users/dashboard.html', {'links':links})
+    else:
+        return render(request, 'users/404.html', {'links':links})
+
 
 @login_required
 def surface(request):
