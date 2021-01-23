@@ -7,7 +7,8 @@ import time
 from stem import Signal
 from stem.control import Controller
 from fake_useragent import UserAgent
-
+from bs4 import BeautifulSoup
+from .utils import connect_mongodb, display_wordcloud
 
 class MiniCrawlbot:
     
@@ -36,7 +37,7 @@ class MiniCrawlbot:
 
     def renew_tor_ip(self):
         with Controller.from_port(port = 9051) as controller:
-            controller.authenticate(password="vjtifyp")
+            controller.authenticate(password="ToRhCPw17$")
             controller.signal(Signal.NEWNYM)
 
     def is_alive(self, url):
@@ -44,99 +45,179 @@ class MiniCrawlbot:
             ua = UserAgent()
             user_agent = ua.random
             headers = {'User-Agent': user_agent}
-            res = requests.get(url, proxies = self.proxies, headers = headers)
-            res.raise_for_status()
+            response = requests.get(url, proxies = self.proxies, headers = headers, timeout = 15)
+            response.raise_for_status()
         except HTTPError as http_err:
             print(" Page not found..." + url)
-            return False
+            return False, None
         except Exception as err:
             print("Page not found..." + url )
-            return False
+            return False, None
         else:
             print("Page has found....")     
-            return True
+            return True, response
 
     def tor_crawler(self, key, depth):
 
         query = '+'.join(key.split(' '))
-        
-        url = 'http://msydqstlz2kzerdg.onion/search/?q=' + query
-        ua = UserAgent()
-        user_agent = ua.random
-        headers = {'User-Agent': user_agent}
-        r = requests.get(url, proxies = self.proxies, headers = headers)
-        body = html.fromstring(r.content)
-        links = body.xpath('//h4/a/@href')
-        
-        
-        seed_list = links
-        found = set()
-        
-        '''main url queue'''
-        urlq = collections.deque()
-        for seed_url in seed_list :
-            seed_url = seed_url.split('url=')[-1]
-            urlq.append(seed_url)
-            found.add(seed_url)
-            print(seed_url)
-            print("#"*20)
 
-        # number of pages to visit in one crawling session
-        countpage = 1
+        visitedcoll = connect_mongodb("dark-key-db", "keywords-visited")
+        coll = connect_mongodb("dark-key-db", query)
 
-        # number of total links harvested during crawling
-        countlink = 1
+        visited = False
+        for _ in visitedcoll.find({"Keyword":query}):
+            visited = True
+
+        links = []
+        wc_words = open('users/static/users/wc_words.txt', 'w', encoding='utf-8')
         
+        if visited:
+            for x in coll.find():
+                links.append(x["Link"])
+                try:
+                    wc_words.write(x["Page content"] + "\n\n")
+                except Exception:
+                    pass
+        
+        else:
+            
+            visitedcoll.insert_one({"Keyword":query})
+            url = 'http://msydqstlz2kzerdg.onion/search/?q=' + query
+            ua = UserAgent()
+            user_agent = ua.random
+            headers = {'User-Agent': user_agent}
+            r = requests.get(url, proxies = self.proxies, headers = headers)
+            body = html.fromstring(r.content)
+            s = BeautifulSoup(r.text, 'lxml')
+            print(">>>>>>>>>", s.find("title").text.strip())
+            links_found = body.xpath('//h4/a/@href')      
 
-        try:	
-            while (len(urlq) != 0 and countpage != depth) :
+            links = ["http://msydqstlz2kzerdg.onion/"]
+            urlq = collections.deque()
+            urlq.append("http://msydqstlz2kzerdg.onion/")
+
+            seed_links = 0
+            for link_found in links_found :
+                link = link_found.split('url=')[-1]
+                if link not in links:
+                    urlq.append(link)
+                    links.append(link)
+                    seed_links += 1
+                    print(link)
+                    print("#"*20)
+                if seed_links>=100:
+                    break
                 
-                '''pop url from queue'''
-                url = urlq.popleft()
+            links_per_page = [1, len(links)]
+
+            # number of pages to visit in one crawling session
+            countpage = 0
+
+            # number of total links harvested during crawling
+            countlink = 1
+            
+            inactive_links = []
+
+            try:	
+                while (len(urlq) != 0 and countpage != depth) :
+                    
+                    '''pop url from queue'''
+                    url = urlq.popleft()
+                            
+                    '''IP spoofing'''
+                    current_ip = self.get_current_ip()
+                    print("IP : {}".format(current_ip))
+                    print("{}. Crawling {}".format(str(countpage+1), url))
+                    
+                    link_active, response = self.is_alive(url)
+                    '''if link is active, visit link '''
+                    if link_active:
                         
-                '''IP spoofing'''
-                current_ip = self.get_current_ip()
-                print("IP : {}".format(current_ip))
-                print("{}. Crawling {}".format(str(countpage), url))
-                
+                        countpage += 1
+                        
+                        '''user agent spoofing'''
+                        # ua = UserAgent()
+                        # user_agent = ua.random
+                        # headers = {'User-Agent': user_agent}
+                        # print("User Agent is : {}".format(user_agent))
+                            
+                        '''send request to chosen site'''
+                        # response = requests.get(url, proxies = self.proxies, headers = headers)
+                        
+                        body = html.fromstring(response.content)
+                        
+                                                    
+                        '''links available on current web page'''
+                        links_found = [urllib.parse.urljoin(response.url, url) for url in body.xpath('//a/@href')]
+                        
+                        no_of_links = 0
 
-                '''if link is active, visit link '''
-                if self.is_alive(url):
-                    
-                    countpage += 1
-                    
-                    '''user agent spoofing'''
+                        for link in links_found:
+                            if link not in links:
+                                urlq.append(link)
+                                links.append(link)
+                                print (str(countlink) +"{:<5}".format(" ")+ link, end= "\n\n" )
+                                countlink += 1
+                                no_of_links += 1
+
+                        links_per_page.append(no_of_links)
+
+                    else:
+                        inactive_links.append(url)
+                        print("Inactive link")
+
+                    '''Obtain new IP using TOR'''
+                    self.renew_tor_ip()                
+                    time.sleep(self.wait_time)
+                                
+            except Exception as e:
+                print(str(e))
+
+            print(">>>>>>>>PART 2>>>>>>>>>>>>>>")
+
+            parent = None
+            link_count = 1
+            idx = 1
+            parent_idx = -1
+
+            for link in links:
+                try:
+                    current_ip = self.get_current_ip()
+                    print("IP : {}".format(current_ip))
                     ua = UserAgent()
                     user_agent = ua.random
                     headers = {'User-Agent': user_agent}
-                    print("User Agent is : {}".format(user_agent))
-                                
-                    '''send request to chosen site'''
-                    response = requests.get(url, proxies = self.proxies, headers = headers)
-                    
-                    body = html.fromstring(response.content)
-                    
-                                                
-                    '''links availab on current web page'''
-                    links = [urllib.parse.urljoin(response.url, url) for url in body.xpath('//a/@href')]
-                    
-                    for link in links:
-                        if link not in found:
-                            urlq.append(link)
-                            found.add(link)
-                            print (str(countlink) +"{:<5}".format(" ")+ link, end= "\n\n" )
-                            countlink += 1
+                    print("Parsing: ", link)
 
-            
-                '''Obtain new IP using TOR'''
-                self.renew_tor_ip()
-                time.sleep(wait_time)
-                
-            links = list(found)            
-                    
-        except Exception as e:
-            print(str(e))
-        
+                    source = requests.get(link, proxies = self.proxies, headers = headers, timeout = 15).text
+                    curr_page = BeautifulSoup(source, 'lxml')
+                    title = curr_page.find("title").text.strip()
+                    text = ' '.join(curr_page.text.split())
+                    wc_words.write(text + "\n\n")
+                    active = True
+                    print("Found")
+                except Exception:
+                    print("Not found")
+                    active = False
+                if active:
+                    coll.insert_one({"Link":link, "Title":title, "Page content":text, "Parent link":parent, "Link status":"Active"})
+                else:
+                    coll.insert_one({"Link":link, "Parent link":parent, "Link status":"Inactive"})
+
+                link_count += 1
+                if sum(links_per_page[:idx])<link_count:
+                    parent_idx += 1
+                    parent = links[parent_idx]
+                    idx += 1
+                while parent in inactive_links:
+                    parent_idx += 1
+                    parent = links[parent_idx]
+
+                self.renew_tor_ip()                
+                time.sleep(self.wait_time)
+
+        display_wordcloud(wc_words)
+
         return links
 
         

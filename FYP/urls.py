@@ -21,6 +21,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('', include('crawler.urls')),
+    path('admin/', admin.site.urls),
     path('register/', user_views.register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
@@ -30,6 +31,10 @@ urlpatterns = [
     path('deep/', user_views.deep, name='deep'),
     path('dark/', user_views.dark, name='dark'),
     path('crawled/', user_views.crawled, name='crawled'),
-    path('admin/', admin.site.urls),
+    path('img_processing/', user_views.img_processing, name='img_processing'),
+    path('text_processing/', user_views.text_processing, name='text_processing'),
+    path('dashboard/active_links/', user_views.active_links, name='active_links'),
+    path('dashboard/link_tree/', user_views.link_tree, name='link_tree'),
+    path('dashboard/word_cloud/', user_views.word_cloud, name='word_cloud'),
 ]
 urlpatterns += staticfiles_urlpatterns()

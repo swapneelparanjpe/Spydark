@@ -8,3 +8,5 @@ stem
 fake-useragent
 pysocks
 wordcloud
+opencv-python
+nltk

@@ -1,6 +1,5 @@
 {% extends "crawler/base.html" %}
 {% load static %}
-{% load crispy_forms_tags %}
 {% block content %}
     <ol>
         {% for link in links %}
@@ -8,6 +7,12 @@
         {% endfor %}
     </ol>
     <br><br>
+    <div class="text-center">
+        <a class="btn btn-primary btn-lg text-light" href="{% url 'text_processing' %}">Perform text processing</a>
+    </div><br><br>
+    <div class="text-center">
+        <a class="btn btn-primary btn-lg text-light" href="{% url 'img_processing' %}">Perform image processing</a>
+    </div><br><br>
     <div class="text-center">
         <a class="btn btn-primary btn-lg text-light" href="{% url 'dashboard' %}">Proceed to Dashboard</a>
     </div>

@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterForm, SearchURL, SearchKeyword, SearchKeywordPlt
 from django.contrib.auth.decorators import login_required
-from .utils import Dashboard, SurfaceURL, Instagram, Twitter
+
+from .utils import addhistory, get_images, get_text, Dashboard, SurfaceURL, Instagram, Twitter
 from .minicrawlbot import MiniCrawlbot
+from .img_detect import detect_object
+from .text_process import detect_text
 
 # for passing arguments in redirect
 from django.urls import reverse
@@ -37,6 +40,22 @@ def dashboard(request):
         return render(request, 'users/dashboard.html', {'links':links})
     else:
         return render(request, 'users/404.html', {'links':links})
+
+@login_required
+def active_links(request):
+    dash = Dashboard()
+    a, ia = dash.active_inactive(database, collection)
+    return render(request, 'users/active_links.html', {'a':a, 'ia':ia, 'flag':True})
+
+@login_required
+def link_tree(request):
+    dash = Dashboard()
+    j = dash.create_tree(database, collection)
+    return render(request, 'users/link_tree.html', {'json':j})
+
+@login_required
+def word_cloud(request):
+    return render(request, 'users/wordclouddash.html')
 
 
 @login_required
@@ -176,6 +195,9 @@ def crawled(request):
         depth = int(request.GET.get('depth'))
         crawler = SurfaceURL(url, depth)
         links = crawler.surfacecrawl()
+        database = "surfacedb"
+        collection = url
+        data = {"Platform": "Surface URL", "Seed URL": url, "Depth":depth}
 
     if code == 'surface_key':
         keyword = request.GET.get('keyword')
@@ -187,21 +209,58 @@ def crawled(request):
             ig = Instagram(keyword, depth)
             links = ig.instacrawl()
             database = "instagramdb"
+            data = {"Platform": "Instagram", "Keyword": keyword, "Depth":depth}
             
         if platform == 2:
             tweet = Twitter(keyword, depth)
             links = tweet.twittercrawl()
             database = "twitterdb"
+            data = {"Platform": "Twitter", "Keyword": keyword, "Depth":depth}
 
     if code == 'dark_key':
         keyword = request.GET.get('keyword')
         depth = int(request.GET.get('depth'))
-
         minicrawl = MiniCrawlbot()
         links = minicrawl.tor_crawler(keyword, depth)
+        database = "dark-key-db"
+        collection = keyword
+        data = {"Platform": "Dark Web Keyword", "Keyword": keyword, "Depth":depth}
         
+    addhistory(request.user.username, data)
+
     end_time = datetime.now()
     diff = end_time - start_time
     time_elapsed = str(diff)[2:11]
 
     return render(request, 'users/crawled.html', {'links':links, 'time_elapsed':time_elapsed})
+
+
+@login_required
+def img_processing(request):
+    links_images = get_images(database, collection)
+    related_links = []
+    for link_image in links_images:
+        link, img_link = link_image
+        if isinstance(img_link, str):
+            detected = detect_object(img_link)
+        elif isinstance(img_link, list):
+            for img in img_link:
+                detected = detect_object(img)
+                if detected:
+                    break
+        if detected:
+            related_links.append(link)
+
+    return render(request, 'users/img_process.html', {'related_links':related_links})
+
+@login_required
+def text_processing(request):
+    links_texts = get_text(database, collection)
+    related_links = []
+    for link_text in links_texts:
+        link, text = link_text
+        detected = detect_text(text)
+        if detected:
+            related_links.append(link)
+
+    return render(request, 'users/text_process.html', {'related_links':related_links})

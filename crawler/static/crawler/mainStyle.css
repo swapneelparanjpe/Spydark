@@ -4,7 +4,7 @@ body {
     margin-top: 5rem;
 }
 
-h1, h2, h3, h4, h5, h6, .links {
+h1, h2, h3, h4, h5, h6, .links{
     color: #dedede;
 }
 
@@ -85,5 +85,4 @@ ul {
     0%{opacity: 0;}
     100%{opacity: 1}
 }
-
 

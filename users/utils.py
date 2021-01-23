@@ -4,15 +4,61 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 import time
+from datetime import datetime
 from wordcloud import WordCloud, STOPWORDS
 from pymongo import MongoClient
 import re
+
+from anytree import Node
+from anytree.search import find_by_attr
+from anytree.exporter import JsonExporter
+
 
 def connect_mongodb(database, keyword):
     client = MongoClient("mongodb+srv://admin_db:kryptonite_DB12@crawling-cluster.exrzi.mongodb.net/surfacedb?retryWrites=true&w=majority")
     db = client[database]
     coll = db[keyword]
     return coll
+
+
+def addhistory(user, data):
+    coll = connect_mongodb("user-history", user)
+    now = datetime.now()
+    history = {"Date": now.strftime("%d/%m/%Y"), "Time":now.strftime("%H:%M")}
+    history.update(data)
+    if coll.count()>=10:
+        coll.find_one_and_delete({})
+    coll.insert_one(history)
+
+def display_wordcloud(wc_words):
+    print("Generating Wordcloud...")
+    stopwords = set(STOPWORDS)
+    wordc = WordCloud(background_color="white", width=700, height=350, stopwords = stopwords)
+    wc_words.seek(0)
+    wordc.generate(open('users/static/users/wc_words.txt', encoding='utf-8').read())
+    wordc.to_file('users/static/users/wc_img.png')
+    wc_words.flush()
+    wc_words.close()
+
+
+def get_images(database, collection):
+    if database is None or collection is None:
+        return False
+    links_images = []
+    coll = connect_mongodb(database, collection)
+    for x in coll.find():
+        links_images.append([x["Link"], x["Image"]])
+    return links_images
+
+def get_text(database, collection):
+    if database is None or collection is None:
+        return False
+    links_texts = []
+    coll = connect_mongodb(database, collection)
+    for x in coll.find():
+        links_texts.append([x["Link"], x["Page content"]])
+    return links_texts
+
 
 class Dashboard:
     def read_db(self, database, collection):
@@ -23,6 +69,35 @@ class Dashboard:
         for x in coll.find():
             links.append(x["Link"])
         return links
+
+    def active_inactive(self, database, collection):
+        if database is None or collection is None:
+            return False
+        coll = connect_mongodb(database, collection)
+        active_links = coll.find({"Link status":"Active"}).count()        
+        inactive_links = coll.find({"Link status":"Inactive"}).count()  
+        return active_links, inactive_links
+
+    def create_tree(self, database, collection):
+        if database is None or collection is None:
+            return False
+        if database == "instagramdb" or database == "twitterdb":
+            return False
+        root = None
+        coll = connect_mongodb(database, collection)
+        for x in coll.find():
+            link = x["Link"]
+            parent = x["Parent link"]
+            if parent:
+                p = find_by_attr(root, parent)
+                Node(link, parent = p)
+            else:
+                root = Node(link)
+                
+        exporter = JsonExporter(indent=2)
+        j = exporter.export(root)
+        return j
+
 
 class SurfaceURL:
     def __init__(self, url, depth):
@@ -37,10 +112,16 @@ class SurfaceURL:
         for _ in self.visitedcoll.find({"seed-url":self.curr_link}):
             visited = True
 
+        wc_words = open('users/static/users/wc_words.txt', 'w', encoding='utf-8')
+
         if visited:
             links = []
             for x in self.coll.find():
                 links.append(x["Link"])
+                try:
+                    wc_words.write(x["Page content"] + "\n\n")
+                except Exception:
+                    pass
                 
         else:
             self.visitedcoll.insert_one({"seed-url":self.curr_link})
@@ -77,17 +158,16 @@ class SurfaceURL:
             link_count = 1
             idx = 1
             parent_idx = -1
-            inactive = []
             for link in links:
                 try:
                     source = requests.get(link).text
                     curr_page = BeautifulSoup(source, 'lxml')
                     title = curr_page.find('title').text
                     text = ' '.join(curr_page.text.split())
+                    wc_words.write(text + "\n\n")
                     success = True
                 except Exception:
                     success = False
-                    inactive.append(link)
                 if success:
                     self.coll.insert_one({"Link":link, "Title":title, "Page content":text, "Parent link":parent, "Successfully parsed":success})
                 else:
@@ -97,6 +177,8 @@ class SurfaceURL:
                     parent_idx += 1
                     parent = links[parent_idx]
                     idx += 1
+        
+        display_wordcloud(wc_words)
         
         return links
 
@@ -116,13 +198,13 @@ class Instagram:
             visited = True
         
         links = []
-        hashtags = []
+        wc_words = open('users/static/users/wc_words.txt', 'w', encoding='utf-8')
 
         if visited:
             for x in self.coll.find():
                 links.append(x["Link"])
                 for hashtag in x["Hashtags"]:
-                    hashtags.append(hashtag)
+                    wc_words.write(hashtag + "\n")
 
         else:
             self.visitedcoll.insert_one({"keyword":self.keyword})
@@ -162,30 +244,30 @@ class Instagram:
                     except Exception:
                         pass
             
+            
             for link in links:
                 post_hashtags = []
                 try:
                     self.driver.get(link)
-                    title = self.driver.find_element_by_tag_name('title').text
                     account = self.driver.find_elements_by_xpath("//*[@id='react-root']/section/main/div/div[1]/article/div[3]/div[1]/ul/div/li/div/div/div[2]/h2/div/span/a")[0].get_attribute('href')
                     caption = self.driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div[1]/article/div[3]/div[1]/ul/div/li/div/div/div[2]/span").text.split("#")[0]
+                    image = self.driver.find_element_by_class_name("FFVAD").get_attribute('src')
                     try:
                         location = self.driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div[1]/article/header/div[2]/div[2]/div[2]/a").text
                     except Exception:
                         location = None
                     hashtags_found = self.driver.find_elements_by_class_name("xil3i")
                     for hashtag_found in hashtags_found:
-                        hashtags.append(hashtag_found.text)
                         post_hashtags.append(hashtag_found.text)
+                        wc_words.write(hashtag_found.text + "\n")
                 except Exception:
+                    print("Parsing failed: ", link)
                     continue
-                self.coll.insert_one({"Link":link, "Title":title, "Posted by":account, "Location":location, "Caption":caption, "Hashtags":post_hashtags})
+                self.coll.insert_one({"Link":link, "Posted by":account, "Location":location, "Image":image, "Caption":caption, "Hashtags":post_hashtags})
             self.driver.quit()
 
-        stopwords = set(STOPWORDS)
-        wordc = WordCloud(background_color="white", stopwords = stopwords)
-        wordc.generate("{}".format(hashtags))
-        wordc.to_file('users/static/users/words_image.png')
+        display_wordcloud(wc_words)
+
         return links
 
 
@@ -203,13 +285,13 @@ class Twitter:
             visited = True
 
         links = []
-        hashtags = []
+        wc_words = open('users/static/users/wc_words.txt', 'w', encoding='utf-8')
 
         if visited:
             for x in self.coll.find():
                 links.append(x["Link"])
                 for hashtag in x["Hashtags"]:
-                    hashtags.append(hashtag)
+                    wc_words.write(hashtag + "\n")
         
         else:
             self.visitedcoll.insert_one({"keyword":self.keyword})
@@ -230,25 +312,27 @@ class Twitter:
 
             for link in links:
                 post_hashtags = []
+                images = [] 
                 try:
                     self.driver.get(link)
                     time.sleep(2)
                     account = link.split("/status/")[0]
+                    img_elements = self.driver.find_elements_by_tag_name("img")
+                    for image in img_elements:
+                        if image.get_attribute("alt") == "Image":
+                            images.append(image.get_attribute("src"))
                     caption_element = self.driver.find_element_by_xpath("//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[2]/div/section/div/div/div[1]/div/div/article/div/div/div/div[3]/div[1]/div/div")
                     caption = caption_element.text
                     for span in caption_element.find_elements_by_xpath("./span"):
                         hashtag = re.findall("#[a-zA-Z0-9]+", span.text)
                         if len(hashtag) == 1:
                             post_hashtags.append(hashtag[0])
-                            hashtags.append(hashtag[0])
+                            wc_words.write(hashtag[0] + "\n")
                 except Exception:
                     continue
-                self.coll.insert_one({"Link":link, "Posted by":account, "Caption":caption, "Hashtags":post_hashtags})
+                self.coll.insert_one({"Link":link, "Posted by":account, "Image": images, "Caption":caption, "Hashtags":post_hashtags})
             self.driver.quit()
 
-        stopwords = set(STOPWORDS)
-        wordc = WordCloud(background_color="white", stopwords = stopwords)
-        wordc.generate("{}".format(hashtags))
-        wordc.to_file('users/static/users/words_image.png')
+        display_wordcloud(wc_words)
 
         return links
