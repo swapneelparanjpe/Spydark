@@ -9,6 +9,7 @@ from stem.control import Controller
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 from .utils import connect_mongodb, display_wordcloud
+import os
 
 class MiniCrawlbot:
     
@@ -59,13 +60,13 @@ class MiniCrawlbot:
 
     def tor_crawler(self, key, depth):
 
-        query = '+'.join(key.split(' '))
+        query = str('+'.join(key.split(' ')))
 
         visitedcoll = connect_mongodb("dark-key-db", "keywords-visited")
-        coll = connect_mongodb("dark-key-db", query)
+        coll = connect_mongodb("dark-key-db", key)
 
         visited = False
-        for _ in visitedcoll.find({"Keyword":query}):
+        for _ in visitedcoll.find({"Keyword":key}):
             visited = True
 
         links = []
@@ -80,9 +81,11 @@ class MiniCrawlbot:
                     pass
         
         else:
+            os.startfile("C:\Tor Browser\Browser\\firefox.exe")
+            time.sleep(10)
+            print("Tor Browser started")
             
-            visitedcoll.insert_one({"Keyword":query})
-            url = 'http://msydqstlz2kzerdg.onion/search/?q=' + query
+            url = 'http://msydqstlz2kzerdg.onion/search?q=' + query
             ua = UserAgent()
             user_agent = ua.random
             headers = {'User-Agent': user_agent}
@@ -94,8 +97,7 @@ class MiniCrawlbot:
 
             links = ["http://msydqstlz2kzerdg.onion/"]
             urlq = collections.deque()
-            urlq.append("http://msydqstlz2kzerdg.onion/")
-
+            
             seed_links = 0
             for link_found in links_found :
                 link = link_found.split('url=')[-1]
@@ -108,7 +110,7 @@ class MiniCrawlbot:
                 if seed_links>=100:
                     break
                 
-            links_per_page = [1, len(links)]
+            links_per_page = [1, len(links)-1]
 
             # number of pages to visit in one crawling session
             countpage = 0
@@ -119,6 +121,7 @@ class MiniCrawlbot:
             inactive_links = []
 
             try:	
+                cnt = 1
                 while (len(urlq) != 0 and countpage != depth) :
                     
                     '''pop url from queue'''
@@ -128,10 +131,17 @@ class MiniCrawlbot:
                     current_ip = self.get_current_ip()
                     print("IP : {}".format(current_ip))
                     print("{}. Crawling {}".format(str(countpage+1), url))
+
+                    cnt += 1
+                    if cnt <= 6 :
+                        inactive_links.append(url)
+                        print("Inactive link")
+                        continue
                     
                     link_active, response = self.is_alive(url)
                     '''if link is active, visit link '''
-                    if link_active:
+
+                    if link_active :
                         
                         countpage += 1
                         
@@ -173,6 +183,7 @@ class MiniCrawlbot:
             except Exception as e:
                 print(str(e))
 
+            print("Total links to parse:", len(links))
             print(">>>>>>>>PART 2>>>>>>>>>>>>>>")
 
             parent = None
@@ -187,7 +198,7 @@ class MiniCrawlbot:
                     ua = UserAgent()
                     user_agent = ua.random
                     headers = {'User-Agent': user_agent}
-                    print("Parsing: ", link)
+                    print(link_count, "-> Parsing:", link)
 
                     source = requests.get(link, proxies = self.proxies, headers = headers, timeout = 15).text
                     curr_page = BeautifulSoup(source, 'lxml')
@@ -199,11 +210,12 @@ class MiniCrawlbot:
                 except Exception:
                     print("Not found")
                     active = False
+                print("Parent:", parent)
                 if active:
                     coll.insert_one({"Link":link, "Title":title, "Page content":text, "Parent link":parent, "Link status":"Active"})
                 else:
                     coll.insert_one({"Link":link, "Parent link":parent, "Link status":"Inactive"})
-
+                
                 link_count += 1
                 if sum(links_per_page[:idx])<link_count:
                     parent_idx += 1
@@ -215,6 +227,8 @@ class MiniCrawlbot:
 
                 self.renew_tor_ip()                
                 time.sleep(self.wait_time)
+                
+            visitedcoll.insert_one({"Keyword":key})
 
         display_wordcloud(wc_words)
 

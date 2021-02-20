@@ -15,7 +15,6 @@ output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()] #
 
 
 def detect_object(img_link):
-    print("Processing......")
     detected = False
     start = time.time()
 
@@ -25,7 +24,12 @@ def detect_object(img_link):
         cv2.rectangle(img, (x, y), (x_plus_w, y_plus_h), color, 2)
         cv2.putText(img, label, (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-    resp = urlopen(img_link)
+    try:
+        resp = urlopen(img_link)
+    except Exception:
+        print("Error in accessing image")
+        return False
+
     image = np.asarray(bytearray(resp.read()), dtype="uint8")
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 
@@ -77,7 +81,7 @@ def detect_object(img_link):
     cv2.imshow("object detection", image)
 
     end = time.time()
-    print("YOLO Execution time: " + str(end-start))
+    print("YOLO Execution time: " + str(end-start) + "\n")
 
     cv2.waitKey(2000)
 

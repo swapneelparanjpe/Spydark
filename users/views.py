@@ -26,36 +26,36 @@ def register(request):
             return redirect('login')
     else:
         form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form':form})    
+    return render(request, 'users/register.html', {'form':form, 'title':"Register Now"})    
 
 @login_required
 def welcome(request):
-    return render(request, 'users/welcome.html')
+    return render(request, 'users/welcome.html', {'title':"Home"})
 
 @login_required
 def dashboard(request):
     dash = Dashboard()
     links = dash.read_db(database, collection)
     if links:
-        return render(request, 'users/dashboard.html', {'links':links})
+        return render(request, 'users/dashboard.html', {'links':links, 'title':"Dashboard"})
     else:
-        return render(request, 'users/404.html', {'links':links})
+        return render(request, 'users/404.html', {'links':links, 'title':"Error page"})
 
 @login_required
 def active_links(request):
     dash = Dashboard()
     a, ia = dash.active_inactive(database, collection)
-    return render(request, 'users/active_links.html', {'a':a, 'ia':ia, 'flag':True})
+    return render(request, 'users/active_links.html', {'a':a, 'ia':ia, 'flag':True, 'title':"Active links"})
 
 @login_required
 def link_tree(request):
     dash = Dashboard()
     j = dash.create_tree(database, collection)
-    return render(request, 'users/link_tree.html', {'json':j})
+    return render(request, 'users/link_tree.html', {'json':j, 'title':"Link Tree"})
 
 @login_required
 def word_cloud(request):
-    return render(request, 'users/wordclouddash.html')
+    return render(request, 'users/wordclouddash.html', {'title':"Wordcloud"})
 
 
 @login_required
@@ -103,7 +103,7 @@ def surface(request):
         form2 = SearchKeywordPlt()
     # <<<<<<<<<<<< Form2
 
-    return render(request, 'users/surface.html', {'form1':form1, 'form2':form2})
+    return render(request, 'users/surface.html', {'form1':form1, 'form2':form2, 'title':"Surface web Crawl"})
  
 @login_required
 def deep(request):
@@ -137,7 +137,7 @@ def deep(request):
         form2 = SearchKeyword()
     # <<<<<<<<<<<< Form2
 
-    return render(request, 'users/deep.html', {'form1':form1, 'form2':form2})
+    return render(request, 'users/deep.html', {'form1':form1, 'form2':form2, 'title':"Deep web Crawl"})
     
 @login_required
 def dark(request):
@@ -180,7 +180,7 @@ def dark(request):
         form2 = SearchKeyword()
     # <<<<<<<<<<<< Form2
 
-    return render(request, 'users/dark.html', {'form1':form1, 'form2':form2})
+    return render(request, 'users/dark.html', {'form1':form1, 'form2':form2, 'title':"Dark web Crawl"})
 
 # Crawling thorugh URLs    
 @login_required
@@ -231,8 +231,7 @@ def crawled(request):
     end_time = datetime.now()
     diff = end_time - start_time
     time_elapsed = str(diff)[2:11]
-
-    return render(request, 'users/crawled.html', {'links':links, 'time_elapsed':time_elapsed})
+    return render(request, 'users/crawled.html', {'links':links, 'time_elapsed':time_elapsed, 'title':"Crawling reults"})
 
 
 @login_required
@@ -240,7 +239,9 @@ def img_processing(request):
     links_images = get_images(database, collection)
     related_links = []
     for link_image in links_images:
+        detected = False
         link, img_link = link_image
+        print("Processing: ", link)
         if isinstance(img_link, str):
             detected = detect_object(img_link)
         elif isinstance(img_link, list):
@@ -251,16 +252,17 @@ def img_processing(request):
         if detected:
             related_links.append(link)
 
-    return render(request, 'users/img_process.html', {'related_links':related_links})
+    return render(request, 'users/img_process.html', {'related_links':related_links, 'title':"Image Processing"})
 
 @login_required
 def text_processing(request):
     links_texts = get_text(database, collection)
     related_links = []
     for link_text in links_texts:
+        detected = False
         link, text = link_text
         detected = detect_text(text)
         if detected:
             related_links.append(link)
 
-    return render(request, 'users/text_process.html', {'related_links':related_links})
+    return render(request, 'users/text_process.html', {'related_links':related_links, 'title':"Text Processing"})

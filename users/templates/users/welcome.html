@@ -1,14 +1,8 @@
 {% extends "crawler/base.html" %}
 {% block content %}
-    <h1>Hello {{ user.username }}</h1>
-    {% if user.is_staff %}
-        <h5>You have admin rights</h5>
-    {% else %}
-        <h5>You're a guest user, you don't have access to certain functions</h5>
-    {% endif %}
     <br><br>
     <h2 class="text-center">Want to know what are the types of web?</h2><br>
     <div class="text-center w-50 m-auto embed-responsive embed-responsive-16by9">
-        <iframe class="embed-responsive-item" width="784" height="441" src="https://www.youtube.com/embed/x2lAqiLxj98?end=70" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe class="embed-responsive-item" width="784" height="441" src="https://www.youtube.com/embed/x2lAqiLxj98?end=70" title="Types of web" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
 {% endblock content %}

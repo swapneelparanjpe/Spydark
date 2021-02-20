@@ -124,7 +124,6 @@ class SurfaceURL:
                     pass
                 
         else:
-            self.visitedcoll.insert_one({"seed-url":self.curr_link})
             source = requests.get(self.curr_link).text
             curr_page = BeautifulSoup(source, 'lxml')
             no_pages = 1
@@ -177,6 +176,7 @@ class SurfaceURL:
                     parent_idx += 1
                     parent = links[parent_idx]
                     idx += 1
+            self.visitedcoll.insert_one({"seed-url":self.curr_link})
         
         display_wordcloud(wc_words)
         
@@ -207,7 +207,6 @@ class Instagram:
                     wc_words.write(hashtag + "\n")
 
         else:
-            self.visitedcoll.insert_one({"keyword":self.keyword})
             self.chrome_options = Options()
             # self.chrome_options.add_argument("--headless")
             self.driver = webdriver.Chrome("chromedriver_win32\\chromedriver.exe")#, chrome_options=self.chrome_options)
@@ -265,6 +264,7 @@ class Instagram:
                     continue
                 self.coll.insert_one({"Link":link, "Posted by":account, "Location":location, "Image":image, "Caption":caption, "Hashtags":post_hashtags})
             self.driver.quit()
+            self.visitedcoll.insert_one({"keyword":self.keyword})
 
         display_wordcloud(wc_words)
 
@@ -294,7 +294,7 @@ class Twitter:
                     wc_words.write(hashtag + "\n")
         
         else:
-            self.visitedcoll.insert_one({"keyword":self.keyword})
+            
             self.chrome_options = Options()
             # self.chrome_options.add_argument("--headless")
             self.driver = webdriver.Chrome("chromedriver_win32\\chromedriver.exe")#, chrome_options=self.chrome_options)
@@ -315,7 +315,7 @@ class Twitter:
                 images = [] 
                 try:
                     self.driver.get(link)
-                    time.sleep(2)
+                    time.sleep(3)
                     account = link.split("/status/")[0]
                     img_elements = self.driver.find_elements_by_tag_name("img")
                     for image in img_elements:
@@ -329,9 +329,11 @@ class Twitter:
                             post_hashtags.append(hashtag[0])
                             wc_words.write(hashtag[0] + "\n")
                 except Exception:
+                    print("Parsing failed: ", link)
                     continue
                 self.coll.insert_one({"Link":link, "Posted by":account, "Image": images, "Caption":caption, "Hashtags":post_hashtags})
             self.driver.quit()
+            self.visitedcoll.insert_one({"keyword":self.keyword})
 
         display_wordcloud(wc_words)
 
