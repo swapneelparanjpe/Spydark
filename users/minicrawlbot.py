@@ -58,16 +58,24 @@ class MiniCrawlbot:
             print("Page has found....")     
             return True, response
 
-    def tor_crawler(self, key, depth):
+    def tor_crawler(self, keyUrl, depth, isKeyword):
 
-        query = str('+'.join(key.split(' ')))
-
-        visitedcoll = connect_mongodb("dark-key-db", "keywords-visited")
-        coll = connect_mongodb("dark-key-db", key)
+        if isKeyword:
+            query = str('+'.join(keyUrl.split(' ')))
+            visitedcoll = connect_mongodb("dark-key-db", "keywords-visited")
+            coll = connect_mongodb("dark-key-db", keyUrl)
+        else:
+            visitedcoll = connect_mongodb("dark-url-db", "seed-urls-visited")
+            coll = connect_mongodb("dark-url-db", keyUrl)
 
         visited = False
-        for _ in visitedcoll.find({"Keyword":key}):
-            visited = True
+
+        if isKeyword:
+            for _ in visitedcoll.find({"Keyword":keyUrl}):
+                visited = True
+        else:
+            for _ in visitedcoll.find({"seed-url":keyUrl}):
+                visited = True
 
         links = []
         wc_words = open('users/static/users/wc_words.txt', 'w', encoding='utf-8')
@@ -85,7 +93,11 @@ class MiniCrawlbot:
             time.sleep(10)
             print("Tor Browser started")
             
-            url = 'http://msydqstlz2kzerdg.onion/search?q=' + query
+            if isKeyword:
+                url = 'http://msydqstlz2kzerdg.onion/search?q=' + query
+            else:
+                url = keyUrl
+
             ua = UserAgent()
             user_agent = ua.random
             headers = {'User-Agent': user_agent}
@@ -93,14 +105,24 @@ class MiniCrawlbot:
             body = html.fromstring(r.content)
             s = BeautifulSoup(r.text, 'lxml')
             print(">>>>>>>>>", s.find("title").text.strip())
-            links_found = body.xpath('//h4/a/@href')      
+            if isKeyword:
+                links_found = body.xpath('//h4/a/@href')      
+            else:
+                links_found = body.xpath('//a/@href')   
+                print("HEREEEE", links_found, len(links_found))   
 
-            links = ["http://msydqstlz2kzerdg.onion/"]
+            if isKeyword:
+                links = ["http://msydqstlz2kzerdg.onion/"]
+            else:
+                links = [keyUrl]
+
             urlq = collections.deque()
             
             seed_links = 0
             for link_found in links_found :
                 link = link_found.split('url=')[-1]
+                if not isKeyword and link[0] == "/":
+                    link = url + link[1:]
                 if link not in links:
                     urlq.append(link)
                     links.append(link)
@@ -121,8 +143,8 @@ class MiniCrawlbot:
             inactive_links = []
 
             try:	
-                cnt = 1
-                while (len(urlq) != 0 and countpage != depth) :
+                # cnt = 0
+                while (len(urlq) != 0 and countpage != depth):
                     
                     '''pop url from queue'''
                     url = urlq.popleft()
@@ -132,8 +154,8 @@ class MiniCrawlbot:
                     print("IP : {}".format(current_ip))
                     print("{}. Crawling {}".format(str(countpage+1), url))
 
-                    cnt += 1
-                    if cnt <= 6 :
+                    # cnt += 1
+                    if url == "http://ctemplarpizuduxk3fkwrieizstx33kg5chlvrh37nz73pv5smsvl6ad.onion/how-to-save-yourself-from-different-types-of-malware/" :
                         inactive_links.append(url)
                         print("Inactive link")
                         continue
@@ -228,10 +250,13 @@ class MiniCrawlbot:
                 self.renew_tor_ip()                
                 time.sleep(self.wait_time)
                 
-            visitedcoll.insert_one({"Keyword":key})
+            if isKeyword:
+                visitedcoll.insert_one({"Keyword":keyUrl})
+            else:
+                visitedcoll.insert_one({"seed-url":keyUrl})
 
-        display_wordcloud(wc_words)
+        topFiveWords = display_wordcloud(wc_words)
 
-        return links
+        return links, topFiveWords
 
         

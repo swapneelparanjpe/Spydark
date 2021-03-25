@@ -13,7 +13,6 @@ from anytree import Node
 from anytree.search import find_by_attr
 from anytree.exporter import JsonExporter
 
-
 def connect_mongodb(database, keyword):
     client = MongoClient("mongodb+srv://admin_db:kryptonite_DB12@crawling-cluster.exrzi.mongodb.net/surfacedb?retryWrites=true&w=majority")
     db = client[database]
@@ -36,9 +35,16 @@ def display_wordcloud(wc_words):
     wordc = WordCloud(background_color="white", width=700, height=350, stopwords = stopwords)
     wc_words.seek(0)
     wordc.generate(open('users/static/users/wc_words.txt', encoding='utf-8').read())
+    topKeyValuePairs = list(wordc.words_.items())[:5]
     wordc.to_file('users/static/users/wc_img.png')
     wc_words.flush()
     wc_words.close()
+
+    topFiveWords = []
+    for topKeyValuePair in topKeyValuePairs:
+        topFiveWords.append(topKeyValuePair[0])
+    
+    return topFiveWords
 
 
 def get_images(database, collection):
@@ -56,9 +62,54 @@ def get_text(database, collection):
     links_texts = []
     coll = connect_mongodb(database, collection)
     for x in coll.find():
-        links_texts.append([x["Link"], x["Page content"]])
+        try:
+            links_texts.append([x["Link"], x["Page content"]])
+        except Exception:
+            pass
     return links_texts
 
+
+def generate_wordcloud_dynamically(database, collections, crawled_choice):
+    if database is None or collections is None:
+        return False
+
+    wc_words = open('users/static/users/wc_words.txt', 'w', encoding='utf-8')
+
+    if crawled_choice < len(collections):
+
+        coll = connect_mongodb(database, collections[crawled_choice])
+
+        if database == "instagramdb" or database == "twitterdb":
+            for x in coll.find():
+                for hashtag in x["Hashtags"]:
+                    wc_words.write(hashtag + "\n")
+
+        elif database == "dark-key-db":
+            for x in coll.find():
+                try:
+                    wc_words.write(x["Page content"] + "\n\n")
+                except Exception:
+                    pass
+
+    else: 
+
+        for collection in collections:
+
+            coll = connect_mongodb(database, collection)
+
+            if database == "instagramdb" or database == "twitterdb":
+                for x in coll.find():
+                    for hashtag in x["Hashtags"]:
+                        wc_words.write(hashtag + "\n")
+
+            elif database == "dark-key-db":
+                for x in coll.find():
+                    try:
+                        wc_words.write(x["Page content"] + "\n\n")
+                    except Exception:
+                        pass
+
+    _ = display_wordcloud(wc_words)
 
 class Dashboard:
     def read_db(self, database, collection):
@@ -97,7 +148,75 @@ class Dashboard:
         exporter = JsonExporter(indent=2)
         j = exporter.export(root)
         return j
+    
+    def display_link_similarity(self, database, collections):
+        if database is None or collections is None:
+            return False
+        
+        links_all_dictionary = {}
+        links_all = []
+        no_of_links = []
+        for collection in collections:
+            links = []
+            coll = connect_mongodb(database, collection)
+            for x in coll.find():
+                links.append(x["Link"])
+                links_all.append(x["Link"])
+            links_all_dictionary[collection] = links
+            no_of_links.append(len(links))
 
+        links_all = list(set(links_all))
+
+        result_matrix = [[0 for _ in range(len(collections)+1)] for _ in range(len(links_all))]
+
+        percentages = []
+
+        all_count = 0
+        for link, idx_link in zip(links_all, range(len(links_all))):
+            for collection, idx_col in zip(collections, range(len(collections))):
+                if link in links_all_dictionary[collection]:
+                    result_matrix[idx_link][idx_col] = 1
+            percentages.append(format(sum(100*result_matrix[idx_link])/len(collections), "0.2f") + "%")
+            if sum(result_matrix[idx_link]) == len(collections):
+                result_matrix[idx_link][-1] = 1
+                all_count += 1
+        
+        return links_all, result_matrix, no_of_links, percentages, all_count
+
+    def get_visited_keywords(self, platform_choice):
+        database = None
+        collection = None
+        field = None
+        if platform_choice == "1":
+            database = "surfacedb"
+            collection = "seed-urls-visited"
+            field = "seed-url"
+        elif platform_choice == "2":
+            database = "instagramdb"
+            collection = "keywords-visited"
+            field = "keyword"
+        elif platform_choice == "3":
+            database = "twitterdb"
+            collection = "keywords-visited"
+            field = "keyword"
+        elif platform_choice == "4":
+            database = "dark-url-db"
+            collection = "seed-urls-visited"
+            field = "seed-url"
+        else:
+            database = "dark-key-db"
+            collection = "keywords-visited"
+            field = "Keyword"
+        
+
+        visited_keywords_choices = []
+        count = 0
+        coll = connect_mongodb(database, collection)
+        for x in coll.find():
+            visited_keywords_choices.append((count, x[field]))
+            count += 1
+        return database, visited_keywords_choices
+        
 
 class SurfaceURL:
     def __init__(self, url, depth):
@@ -178,9 +297,9 @@ class SurfaceURL:
                     idx += 1
             self.visitedcoll.insert_one({"seed-url":self.curr_link})
         
-        display_wordcloud(wc_words)
+        topFiveWords = display_wordcloud(wc_words)
         
-        return links
+        return links, topFiveWords
 
 
 class Instagram:
@@ -266,9 +385,9 @@ class Instagram:
             self.driver.quit()
             self.visitedcoll.insert_one({"keyword":self.keyword})
 
-        display_wordcloud(wc_words)
+        topFiveWords = display_wordcloud(wc_words)
 
-        return links
+        return links, topFiveWords
 
 
 class Twitter:
@@ -335,6 +454,6 @@ class Twitter:
             self.driver.quit()
             self.visitedcoll.insert_one({"keyword":self.keyword})
 
-        display_wordcloud(wc_words)
+        topFiveWords = display_wordcloud(wc_words)
 
-        return links
+        return links, topFiveWords

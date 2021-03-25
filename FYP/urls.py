@@ -32,13 +32,13 @@ urlpatterns = [
     path('welcome/', user_views.welcome, name='welcome'),
     path('dashboard/', user_views.dashboard, name='dashboard'),
     path('surface/', user_views.surface, name='surface'),
-    path('deep/', user_views.deep, name='deep'),
     path('dark/', user_views.dark, name='dark'),
     path('crawled/', user_views.crawled, name='crawled'),
     path('img_processing/', user_views.img_processing, name='img_processing'),
     path('text_processing/', user_views.text_processing, name='text_processing'),
-    path('dashboard/active_links/', user_views.active_links, name='active_links'),
-    path('dashboard/link_tree/', user_views.link_tree, name='link_tree'),
     path('dashboard/word_cloud/', user_views.word_cloud, name='word_cloud'),
+    path('dashboard/active_links/', user_views.active_links, name='active_links'),
+    path('dashboard/link_similarity/', user_views.link_similarity, name='link_similarity'),
+    path('dashboard/link_tree/', user_views.link_tree, name='link_tree'),
 ]
 urlpatterns += staticfiles_urlpatterns()

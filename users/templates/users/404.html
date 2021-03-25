@@ -1,12 +1,11 @@
-{% extends "crawler/base.html" %}
+{% extends "users/dashboard.html" %}
 {% load static %}
-{% block content %}
+{% block dashboard %} 
 
-    <h1 class="">An error occurred</h1>
+    <h2>Looks like you didn't perform any crawling yet.</h2>
     <br><br>
     <a class="btn btn-outline-primary btn-lg" href="{% url 'surface' %}">Try Surface crawling</a><br><br>
     <a class="btn btn-outline-primary btn-lg" href="{% url 'dark' %}">Try Dark web crawling</a><br><br>
     <a class="btn btn-outline-primary btn-lg" href="{% url 'welcome' %}">Return to Home page</a><br><br>
-    <img class="error-img" src="{% static 'crawler/error.gif' %}" alt="Error">    
-
-{% endblock content %}
+    
+{% endblock dashboard %}

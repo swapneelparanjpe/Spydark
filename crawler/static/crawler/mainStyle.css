@@ -41,6 +41,10 @@ ul {
     margin: 20px auto;
 }
 
+.seed-url-options {
+    word-wrap: break-word;
+}
+
 .start{
     color: #dedede;
     cursor: pointer;
@@ -68,7 +72,23 @@ ul {
     visibility: hidden;
 }
 
-.time{
+#topFiveWords{
+    position: fixed;
+    top: 23%;
+    right:2%;
+    border: solid #ff0000;
+    background-color: #000000;
+    font-size:80%;
+    text-align: center;
+    padding: 1%;   
+    padding-top: 0.5%;
+}
+
+.iterative_word:hover {
+    text-decoration: underline;
+}
+
+.time {
     position: fixed;
     bottom: 2%;
     right:2%;
@@ -85,4 +105,3 @@ ul {
     0%{opacity: 0;}
     100%{opacity: 1}
 }
-

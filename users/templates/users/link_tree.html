@@ -1,6 +1,19 @@
 {% extends "users/dashboard.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block dashboard %} 
+
+	{% if form %}
+		<div id="keyword" class="w-50 pl-5 pr-5 m-auto">
+			<form method="POST">         
+				{% csrf_token %}
+				<fieldset class="form-group text-primary">
+					<legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select Keyword</legend>
+					{{ form|crispy }}
+				</fieldset>
+			</form>
+		</div>
+	{% endif %}
 
 	{% if json %}
 		<div id="treeChart">
@@ -13,10 +26,12 @@
 		</script>
 
 	{% else %}
-		<h2>Service not valid for your latest crawl</h2><br><br>
+		<h2>Service not valid</h2><br><br>
 		<img width="90%" src="{% static 'users/oops.gif' %}" alt="Oops image"/>
 
 	{% endif %}
+
+
 {% endblock dashboard %}
 
 

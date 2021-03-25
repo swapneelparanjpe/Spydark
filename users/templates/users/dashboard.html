@@ -34,6 +34,12 @@
 					</a>
 				</li>
 				<li>
+					<a href="{% url 'link_similarity' %}">
+						<svg enable-background="new 0 0 48 48" height="48px" id="Layer_3" version="1.1" viewBox="0 0 48 48" width="48px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><polygon fill="#dde9f8" points="15.917,4 18.062,4 20,4 21,4 21,0 20,0 18.062,0 12,0 12,8 15.917,8  "/><rect fill="#dde9f8" height="4" width="10" x="25"/><rect fill="#dde9f8" height="9.958" width="4.083" x="43.917" y="13"/><polygon fill="#dde9f8" points="41.042,0 39.979,0 39.021,0 39.021,4 39.979,4 41.042,4 43.917,4 43.917,7.453 43.917,8    43.917,9.016 48,9.016 48,8 48,7.453 48,0  "/><polygon fill="#dde9f8" points="43.917,28 43.917,29.167 43.917,32 40,32 40,36 48,36 48,29.167 48,28 48,27.083 43.917,27.083     "/><path d="M0,48h36V12H0V48z M4,16h28v28H4V16z" fill="#dde9f8"/></g></svg>
+						<span>Link Similarity</span>
+					</a>
+				</li>
+				<li>
 					<a href="{% url 'link_tree' %}">
 						<svg enable-background="new 0 0 24 24" height="24px" id="Layer_1" version="1.1" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M19.1,23.5c-2.4,0-4.3-1.9-4.4-4.3l-7.3-3.7c-0.8,0.6-1.6,0.8-2.6,0.8c-2.4,0-4.4-2-4.4-4.4c0-2.4,2-4.4,4.4-4.4    c0.9,0,1.8,0.3,2.6,0.8l7.3-3.7c0-2.4,2-4.3,4.4-4.3c2.4,0,4.4,2,4.4,4.4c0,2.4-2,4.4-4.4,4.4c-0.9,0-1.8-0.3-2.6-0.8L9.4,12    l7.2,3.6c0.7-0.5,1.6-0.8,2.6-0.8c2.4,0,4.4,2,4.4,4.4C23.5,21.5,21.5,23.5,19.1,23.5z"/></g></g></svg>
 						<span>Link Tree</span>
@@ -67,12 +73,19 @@
 
 
 	<section class="page-content">
+
+		<form action="{% url 'dashboard' %}" method="POST", id="close-btn">
+			{% csrf_token %}
+			<button type="button" class="close" aria-label="Close" onclick="document.forms['close-btn'].submit();" data-toggle="tooltip" data-placement="top" title="Clear last crawl">
+				<span>&#10060;</span>
+			</button>
+		</form>
+
 		
-		{% if links %}
+		{% if links %}		
 			<h2>Results from previous crawling</h2><br>
 			<ol>
 				{% for link in links %}
-					<script>console.log("KJNAN");</script>
 					<li class="text-primary"><a target="_blank" href="{{ link }}">{{ link }}</a></li>
 				{% endfor %}
 			</ol>

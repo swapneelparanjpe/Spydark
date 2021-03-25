@@ -261,6 +261,28 @@ circle:hover + text{
 	border-radius: 15px;
 }
 
+th {
+	text-align: center;
+	font-size: large;
+}
+
+.c-align {
+	text-align: center;
+}
+
+tr {
+	color:#dedede;
+}
+
+
+tr:hover {
+	background-color: #301934;
+}
+
+td {
+	max-width: 700px;
+	word-wrap: break-word;
+}
 
 
 

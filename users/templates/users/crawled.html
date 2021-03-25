@@ -7,7 +7,7 @@
         {% endfor %}
     </ol>
     <br><br>
-    <div class="text-center">
+    <div id="go_to_dashboard" class="text-center">
         <a class="btn btn-primary btn-lg text-light" href="{% url 'text_processing' %}">Perform text processing</a>
     </div><br><br>
     <div class="text-center">
@@ -17,8 +17,44 @@
         <a class="btn btn-primary btn-lg text-light" href="{% url 'dashboard' %}">Proceed to Dashboard</a>
     </div>
     <br><br><br><br>
+
+    {% if isIterative %}
+        <div id="topFiveWords">
+            <h4>Most occuring words</h4>
+            
+            {% for word, wordUrl in topWords %}
+                <a class="btn text-light d-block iterative_word" href={{urlSub1}}{{wordUrl}}{{urlSub2}} onclick="loading()">{{ word }}</a>
+            {% endfor %}
+
+            <a class="btn text-danger d-block iterative_word" href="#go_to_dashboard" onclick="window.clearTimeout(autoTimer); setTimeout(function() {document.getElementById('topFiveWords').style.display = 'none';}, 1000)">Terminate crawling</a>
+            <hr>
+            <small class="text-warning">Next crawling will begin in 15 seconds</small>
+        </div>
+    {% endif %}
+
     <div class="time">
         <h6>Time elapsed</h6>
         <h4>{{ time_elapsed }}</h4>
     </div>
+
+    <div id="loader">
+        <img src="{% static 'crawler/loader.gif' %}" alt="Loading...">
+    </div>
+
+    <script>
+        if ("{{isIterative}}") {
+            
+            var autoTimer = window.setTimeout(function() {
+            if (document.readyState == "complete") {
+                console.log(">>>>");
+                // window.location.href = document.getElementsByClassName('iterative_word')[0].getAttribute('href');
+            }
+        }, 5000)
+        }
+
+        // function clearTimeout() {
+            
+        //     document.getElementsByClassName('topFiveWords')[0].setAttribute('visibility', 'none');
+        // }
+    </script>
 {% endblock content %}
