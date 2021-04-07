@@ -193,3 +193,64 @@ if (document.getElementById("treeChart")) {
 	}
 }
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+//* LINK STATUS OVER PERIOD OF TIME  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+var activity_period_ctx = document.getElementById("line_chart")
+console.log(">>>", activity)
+if (activity_period_ctx) {  
+	var lineChart = new Chart(activity_period_ctx, {
+		type: 'line',
+		data: {
+			labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+			datasets: [{
+			lineTension: 0,
+			backgroundColor: "rgba(78, 115, 223, 0.05)",
+			borderColor: "#3700b3",
+			pointRadius: 2,
+			pointBackgroundColor: "rgba(78, 115, 223, 1)",
+			pointBorderWidth: 2,
+			pointBorderColor: "rgba(78, 115, 223, 1)",
+			pointHoverRadius: 3,
+			pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+			pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+			pointHitRadius: 10,
+			data: activity,
+			}],
+		},
+		options: {
+			legend: {
+				display: false
+			},
+			maintainAspectRatio: false,
+			tooltips: {
+				displayColors: false,
+				callbacks: {
+                    label: function(tooltipItems) { 
+                        if (tooltipItems.yLabel == 0) {
+							return "Inactive"
+						} else {
+							return "Active"
+						}
+                    },
+				
+                }
+			},
+			scales: {
+				yAxes: [{
+					ticks: {
+						// Include a dollar sign in the ticks
+						callback: value => {
+							if (value == 0){
+								return 'Inactive'
+							} else if (value == 1) {
+								return 'Active'
+							} 
+						}
+					}
+				}],
+			}
+		},
+	});
+}
+//* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

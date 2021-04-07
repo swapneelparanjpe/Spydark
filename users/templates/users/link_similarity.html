@@ -20,7 +20,7 @@
                     <th>All ({{all_count }})</th>
                     <th>Percentage</th>
                 </tr>
-                {% for link, matrix, percentage  in links_matrix%}
+                {% for link, matrix, percentage  in links_matrix %}
                     <tr>
                         <td>{{ link }}</td>
                         {% for col in matrix %}
@@ -38,12 +38,13 @@
 
     {% else %}
 
+    <br>
         {% if select_platform_dropdown %}
-            <div id="keyword" class="w-50 pl-5 pr-5 m-auto">
+            <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
                 <form method="POST">         
                     {% csrf_token %}
                     <fieldset class="form-group text-primary">
-                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select Keyword</legend>
+                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select Platform</legend>
                         {{ select_platform_dropdown|crispy }}
                     </fieldset>
                 </form>
@@ -51,11 +52,11 @@
         {% endif %}
 
         {% if select_keyword_dropdown %}
-            <div id="keyword" class="w-50 pl-5 pr-5 m-auto">
+            <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
                 <form method="POST" id = "custom_similarity_keyword">         
                     {% csrf_token %}
                     <fieldset class="form-group text-light">
-                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend text-primary">Select keyword/seed-URL</legend>
+                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend text-primary">Select Keywords/Seed URLs</legend>
                         {{ select_keyword_dropdown|crispy }}
                     </fieldset>
                     <div class="form-group">

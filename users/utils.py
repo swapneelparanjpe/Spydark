@@ -8,7 +8,7 @@ from datetime import datetime
 from wordcloud import WordCloud, STOPWORDS
 from pymongo import MongoClient
 import re
-
+import json
 from anytree import Node
 from anytree.search import find_by_attr
 from anytree.exporter import JsonExporter
@@ -111,6 +111,7 @@ def generate_wordcloud_dynamically(database, collections, crawled_choice):
 
     _ = display_wordcloud(wc_words)
 
+
 class Dashboard:
     def read_db(self, database, collection):
         if database is None or collection is None:
@@ -183,7 +184,7 @@ class Dashboard:
         
         return links_all, result_matrix, no_of_links, percentages, all_count
 
-    def get_visited_keywords(self, platform_choice):
+    def get_visited_keywords(self, platform_choice, link_or_content):
         database = None
         collection = None
         field = None
@@ -207,15 +208,63 @@ class Dashboard:
             database = "dark-key-db"
             collection = "keywords-visited"
             field = "Keyword"
-        
 
-        visited_keywords_choices = []
-        count = 0
+        if link_or_content == "content":
+            visited_keywords_choices = [(0,"--Select option--")]
+            count = 1
+        else:
+            visited_keywords_choices = []
+            count = 0
+
         coll = connect_mongodb(database, collection)
         for x in coll.find():
             visited_keywords_choices.append((count, x[field]))
             count += 1
         return database, visited_keywords_choices
+
+    def get_visited_links(self, database, collection):
+        if database is None or collection is None:
+            return False
+        visited_links_choices = [(0,"--Select option--")]
+        count = 1
+        coll = connect_mongodb(database, collection)
+        for x in coll.find():
+            visited_links_choices.append((count, x["Link"]))
+            count += 1
+        return visited_links_choices
+
+    
+    def get_page_content(self, link, collection, database):
+        coll = connect_mongodb(database, collection)
+        page_content = coll.find_one({"Link":link})["Page content"]
+        return page_content
+
+    def get_activity_period(self, database, collection, link):
+        coll = connect_mongodb(database, collection)
+        activity = coll.find_one({"Link":link})["Status"]
+        activity = json.dumps(activity)
+        return activity
+
+    def get_unflagged_links(self, database, collection):
+        if database is None or collection is None:
+            return False
+
+        flagged_links = []
+        coll = connect_mongodb("flagged-links", "darkweb-flagged")
+        for x in coll.find():
+            flagged_links.append(x["Link"])
+
+        unflagged_link_choices = []
+        current_status = []
+        count = 0
+        coll = connect_mongodb(database, collection)
+        for x in coll.find():
+            if x["Link"] not in flagged_links:
+                unflagged_link_choices.append((count, x["Link"]))
+                current_status.append(x["Link status"])
+                count += 1
+
+        return unflagged_link_choices, current_status
         
 
 class SurfaceURL:

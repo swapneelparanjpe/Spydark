@@ -259,4 +259,53 @@ class MiniCrawlbot:
 
         return links, topFiveWords
 
+
+    def get_page_content(self, link):
+        os.startfile("C:\Tor Browser\Browser\\firefox.exe")
+        time.sleep(10)
+        print("Tor Browser started")
+
+        current_ip = self.get_current_ip()
+        print("IP : {}".format(current_ip))
+        ua = UserAgent()
+        user_agent = ua.random
+        headers = {'User-Agent': user_agent}
+
+        source = requests.get(link, proxies = self.proxies, headers = headers, timeout = 15).text
+        curr_page = BeautifulSoup(source, 'lxml')
+        page_content = ' '.join(curr_page.text.split())
+        print(">>>", page_content)
+        return page_content
+
         
+    def get_todays_status(self, flagged_links):
+        os.startfile("C:\Tor Browser\Browser\\firefox.exe")
+        time.sleep(10)
+        print("Tor Browser started")
+
+        todays_status = []
+
+        for flagged_link in flagged_links:
+
+            current_ip = self.get_current_ip()
+            print("IP : {}".format(current_ip))
+            ua = UserAgent()
+            user_agent = ua.random
+            headers = {'User-Agent': user_agent}
+
+            try:
+                source = requests.get(flagged_link, proxies = self.proxies, headers = headers, timeout = 15).text
+                curr_page = BeautifulSoup(source, 'lxml')
+                _ = curr_page.find("title").text.strip()
+                active = True
+                print("Found ->", flagged_link)
+            except Exception:
+                print("Not found ->", flagged_link)
+                active = False
+            
+            todays_status.append(active)
+
+            self.renew_tor_ip()                
+            time.sleep(self.wait_time)
+
+        return todays_status
