@@ -198,11 +198,15 @@ if (document.getElementById("treeChart")) {
 //* LINK STATUS OVER PERIOD OF TIME  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 var activity_period_ctx = document.getElementById("line_chart")
 console.log(">>>", activity)
-if (activity_period_ctx) {  
+if (activity_period_ctx) {
+	var weekNums = [];
+	for (var i = -activity.length + 1; i <= 0; i++)
+		weekNums.push(i);
+
 	var lineChart = new Chart(activity_period_ctx, {
 		type: 'line',
 		data: {
-			labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+			labels: weekNums,
 			datasets: [{
 			lineTension: 0,
 			backgroundColor: "rgba(78, 115, 223, 0.05)",
@@ -223,6 +227,10 @@ if (activity_period_ctx) {
 				display: false
 			},
 			maintainAspectRatio: false,
+			bounds: {
+				min: 0,
+				max: 1,
+			},
 			tooltips: {
 				displayColors: false,
 				callbacks: {
@@ -238,6 +246,10 @@ if (activity_period_ctx) {
 			},
 			scales: {
 				yAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: "Status",
+					},
 					ticks: {
 						// Include a dollar sign in the ticks
 						callback: value => {
@@ -248,6 +260,12 @@ if (activity_period_ctx) {
 							} 
 						}
 					}
+				}],
+				xAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: "Week number",
+					},
 				}],
 			}
 		},
