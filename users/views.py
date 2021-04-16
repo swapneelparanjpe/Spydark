@@ -7,7 +7,7 @@ from .utils import connect_mongodb, addhistory, get_images, get_text, generate_w
 from .minicrawlbot import MiniCrawlbot
 from .img_detect import detect_object
 from .text_process import detect_text, compare_page_content
-from .track_links import track_links_periodically
+from .track_links import track_links_periodically, stop_tracking
 
 # for passing arguments in redirect
 from django.urls import reverse
@@ -41,10 +41,10 @@ def register(request):
 
 @login_required
 def welcome(request):
-    msg = track_links_periodically()
+    msg = track_links_periodically(False)
     if msg != None:
         messages.info(request, f'{msg}')
-    return render(request, 'users/welcome.html', {'title':"Home"})
+    return render(request, 'users/welcome.html', {'title':"Home", 'msg':msg})
 
 @login_required
 def dashboard(request):
@@ -305,18 +305,33 @@ def content_similarity(request):
 
 @login_required
 def activity_period(request):
-
     dash = Dashboard()
     flagged_link_choices = dash.get_visited_links("flagged-links", "darkweb-flagged")
+    flagged_link_choices.append((len(flagged_link_choices), "All links"))
 
     if request.method =='POST':
+
+        if 'track-now' in request.POST:
+            msg = track_links_periodically(True)
+            select_link_dropdown = LinkActivityPeriod(flagged_link_choices)
+            return render(request, 'users/activity_period.html', {'title':"Activity Period", 'select_link_dropdown':select_link_dropdown, 'msg':msg})
+        
+        if 'stop-tracking' in request.POST:
+            stop_tracking_link = request.POST['stop-tracking']
+            msg = stop_tracking(stop_tracking_link)
+            select_link_dropdown = LinkActivityPeriod(flagged_link_choices)
+            return render(request, 'users/activity_period.html', {'title':"Activity Period", 'select_link_dropdown':select_link_dropdown, 'msg':msg})
+        
         select_link_dropdown = LinkActivityPeriod(flagged_link_choices, request.POST)
         if select_link_dropdown.is_valid():
             link_choice = select_link_dropdown.cleaned_data.get('flagged_link_choices')
             selected_link = flagged_link_choices[int(link_choice)][1]
-            activity = dash.get_activity_period("flagged-links", "darkweb-flagged", selected_link)
-            print(">>>", activity)
-            return render(request, 'users/activity_period.html', {'title':"Activity Period", 'select_link_dropdown':select_link_dropdown, 'selected_link':selected_link, 'activity':activity})
+            if selected_link == "All links":
+                active_links_period, inactive_links_period, percentage_activity, custom_activity_all_matrix = dash.get_all_activity_period()
+                return render(request, 'users/activity_period.html', {'title':"Activity Period", 'select_link_dropdown':select_link_dropdown, 'selected_link':selected_link, 'active_links_period':active_links_period, 'inactive_links_period':inactive_links_period, 'percentage_activity':percentage_activity, 'custom_activity_all_matrix':custom_activity_all_matrix})
+            else:
+                activity, percentage_activity, custom_activity_matrix = dash.get_activity_period(selected_link)
+                return render(request, 'users/activity_period.html', {'title':"Activity Period", 'select_link_dropdown':select_link_dropdown, 'selected_link':selected_link, 'activity':activity, 'percentage_activity':percentage_activity, 'custom_activity_matrix':custom_activity_matrix})
     else: 
         select_link_dropdown = LinkActivityPeriod(flagged_link_choices)
     return render(request, 'users/activity_period.html', {'title':"Activity Period", 'select_link_dropdown':select_link_dropdown})

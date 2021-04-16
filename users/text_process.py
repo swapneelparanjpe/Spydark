@@ -12,7 +12,7 @@ from collections import Counter
 from .utils import connect_mongodb
 
 df_train=pd.read_csv('users/static/users/fin_processed.csv')
-detection_threshold = 0.30
+detection_threshold = 0.03
 
 lemmatizer = WordNetLemmatizer()
 vectorizer = CountVectorizer(max_features=1500)

@@ -239,11 +239,55 @@ class Dashboard:
         page_content = coll.find_one({"Link":link})["Page content"]
         return page_content
 
-    def get_activity_period(self, database, collection, link):
-        coll = connect_mongodb(database, collection)
+    def get_activity_period(self, link):
+        coll = connect_mongodb("flagged-links", "darkweb-flagged")
         activity = coll.find_one({"Link":link})["Status"]
+        percentage_activity = format(100*sum(activity)/len(activity), "0.2f")
         activity = json.dumps(activity)
-        return activity
+
+        custom_activity = coll.find_one({"Link":link})["Custom"][0]
+        custom_activity_matrix = []
+        for key, value in custom_activity.items():
+            custom_activity_matrix.append([key.split()[0], key.split()[1], "Active" if value else "Inactive"])
+
+        return activity, percentage_activity, custom_activity_matrix
+
+    def get_all_activity_period(self):
+        coll = connect_mongodb("flagged-links", "darkweb-flagged")
+        all_status = []
+        max_length = -1
+        custom_activity_all_matrix = []
+        for x in coll.find():
+            all_status.append(x["Status"][::-1])
+            custom_activity_status = x["Custom"][0]
+            custom_link_status_matrix = []
+            for key, value in custom_activity_status.items():
+                custom_link_status_matrix.append([key.split()[0], key.split()[1], "Active" if value else "Inactive"])
+            custom_activity_all_matrix.append([x["Link"], len(custom_link_status_matrix)+1, custom_link_status_matrix])
+            if len(x["Status"]) > max_length:
+                max_length = len(x["Status"])
+
+        active_links_period = []
+        inactive_links_period = []
+        for day in range(max_length):
+            no_of_links = 0
+            no_of_active_links = 0
+            for status_idx in range(len(all_status)):
+                try:
+                    status = all_status[status_idx][day]
+                    no_of_links += 1
+                    no_of_active_links += status
+                except Exception:
+                    pass
+            no_of_inactive_links = no_of_links - no_of_active_links
+            active_links_period.append(no_of_active_links)
+            inactive_links_period.append(no_of_inactive_links)
+
+        percentage_activity = format(100*sum(active_links_period)/(sum(active_links_period) + sum(inactive_links_period)), "0.2f")
+        active_links_period = json.dumps(active_links_period[::-1])
+        inactive_links_period = json.dumps(inactive_links_period[::-1])
+        return active_links_period, inactive_links_period, percentage_activity, custom_activity_all_matrix
+        
 
     def get_unflagged_links(self, database, collection):
         if database is None or collection is None:

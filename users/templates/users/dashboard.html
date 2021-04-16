@@ -12,7 +12,7 @@
 	
 	<header class="page-header mt-5">
 		<nav>
-			<a href="{% url 'dashboard' %}" class="text-decoration-none">
+			<a href="{% url 'dashboard' %}" class="text-decoration-none" onclick="loading()">
 			{% if user.is_staff %}
 				<img id="dp" class="logo rounded-circle mx-auto" src="{% static 'users/admin.png' %}" alt="Admin">
 				{% else %}
@@ -22,31 +22,31 @@
 			</a>
 			<ul class="admin-menu">
 				<li>
-					<a href="{% url 'word_cloud' %}">
+					<a href="{% url 'word_cloud' %}" onclick="loading()">
 						<svg height="56.6934px" id="Layer_1" style="enable-background:new 0 0 56.6934 56.6934;" version="1.1" viewBox="0 0 56.6934 56.6934" width="56.6934px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M44.9246,24.5134c-0.1648-7.0623-5.9371-12.7376-13.039-12.7376c-4.9299,0-9.2199,2.735-11.4387,6.7698  c-1.0023-0.576-2.1633-0.9071-3.4024-0.9071c-3.6061,0-6.5584,2.7912-6.8195,6.3306c-3.5574,1.4606-6.0636,4.9576-6.0636,9.0415  c0,5.3968,4.3749,9.7718,9.7718,9.7718h29.396c5.0836,0,9.2047-4.1211,9.2047-9.2047  C52.5339,29.0383,49.2473,25.2693,44.9246,24.5134z"/></svg>
 						<span>Word Cloud</span>
 					</a>
 				</li>
 				<li>
-					<a href="{% url 'flag_links' %}">
+					<a href="{% url 'flag_links' %}" onclick="loading()">
 						<svg fill="none" height="24" stroke="#dde9f8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
 						<span>Flag to Track</span>
 					</a>
 				</li>
 				<li>
-					<a href="{% url 'active_links' %}">
+					<a href="{% url 'active_links' %}" onclick="loading()">
 						<svg height="28" viewBox="0 0 28 28" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M6.65263 14.0304C6.29251 13.6703 6.29251 13.0864 6.65263 12.7263C7.01276 12.3662 7.59663 12.3662 7.95676 12.7263L11.6602 16.4297L19.438 8.65183C19.7981 8.29171 20.382 8.29171 20.7421 8.65183C21.1023 9.01195 21.1023 9.59583 20.7421 9.95596L12.3667 18.3314C11.9762 18.7219 11.343 18.7219 10.9525 18.3314L6.65263 14.0304Z" fill="dde9f8"/><path clip-rule="evenodd" d="M14 1C6.8203 1 1 6.8203 1 14C1 21.1797 6.8203 27 14 27C21.1797 27 27 21.1797 27 14C27 6.8203 21.1797 1 14 1ZM3 14C3 7.92487 7.92487 3 14 3C20.0751 3 25 7.92487 25 14C25 20.0751 20.0751 25 14 25C7.92487 25 3 20.0751 3 14Z" fill="dde9f8" fill-rule="evenodd"/></svg>
 						<span>Link Status</span>
 					</a>
 				</li>
 				<li>
-					<a href="{% url 'link_similarity' %}">
+					<a href="{% url 'link_similarity' %}" onclick="loading()">
 						<svg enable-background="new 0 0 48 48" height="48px" id="Layer_3" version="1.1" viewBox="0 0 48 48" width="48px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><polygon fill="#dde9f8" points="15.917,4 18.062,4 20,4 21,4 21,0 20,0 18.062,0 12,0 12,8 15.917,8  "/><rect fill="#dde9f8" height="4" width="10" x="25"/><rect fill="#dde9f8" height="9.958" width="4.083" x="43.917" y="13"/><polygon fill="#dde9f8" points="41.042,0 39.979,0 39.021,0 39.021,4 39.979,4 41.042,4 43.917,4 43.917,7.453 43.917,8    43.917,9.016 48,9.016 48,8 48,7.453 48,0  "/><polygon fill="#dde9f8" points="43.917,28 43.917,29.167 43.917,32 40,32 40,36 48,36 48,29.167 48,28 48,27.083 43.917,27.083     "/><path d="M0,48h36V12H0V48z M4,16h28v28H4V16z" fill="#dde9f8"/></g></svg>
 						<span>Link Similarity</span>
 					</a>
 				</li>
 				<li>
-					<a href="{% url 'link_tree' %}">
+					<a href="{% url 'link_tree' %}" onclick="loading()">
 						<svg enable-background="new 0 0 24 24" height="24px" id="Layer_1" version="1.1" viewBox="0 0 24 24" width="24px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M19.1,23.5c-2.4,0-4.3-1.9-4.4-4.3l-7.3-3.7c-0.8,0.6-1.6,0.8-2.6,0.8c-2.4,0-4.4-2-4.4-4.4c0-2.4,2-4.4,4.4-4.4    c0.9,0,1.8,0.3,2.6,0.8l7.3-3.7c0-2.4,2-4.3,4.4-4.3c2.4,0,4.4,2,4.4,4.4c0,2.4-2,4.4-4.4,4.4c-0.9,0-1.8-0.3-2.6-0.8L9.4,12    l7.2,3.6c0.7-0.5,1.6-0.8,2.6-0.8c2.4,0,4.4,2,4.4,4.4C23.5,21.5,21.5,23.5,19.1,23.5z"/></g></g></svg>
 						<span>Link Tree</span>
 					</a>
@@ -58,20 +58,20 @@
 					</a>
 				</li>
 				<li>
-					<a href="{% url 'activity_period' %}">
+					<a href="{% url 'activity_period' %}" onclick="loading()">
 						<svg id="Layer_1" style="enable-background:new 0 0 256 256;" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M29.4,190.9c2.8,0,5-2.2,5-5v-52.3l30.2-16.2v42.9c0,2.8,2.2,5,5,5c2.8,0,5-2.2,5-5v-59.6l-50.1,26.9v58.3   C24.4,188.6,26.6,190.9,29.4,190.9z"/><path d="M89.6,153c2.8,0,5-2.2,5-5V59.6l30.2-16.2v143.8c0,2.8,2.2,5,5,5c2.8,0,5-2.2,5-5V26.7L84.6,53.6V148   C84.6,150.7,86.8,153,89.6,153z"/><path d="M149.8,185.7c2.8,0,5-2.2,5-5V85.4L185,69.2v86.3c0,2.8,2.2,5,5,5c2.8,0,5-2.2,5-5v-103l-50.1,26.9v101.3   C144.8,183.5,147.1,185.7,149.8,185.7z"/><path d="M250,146.2c-0.9-1.5-2.5-2.5-4.3-2.5h-34.5c-1.8,0-3.4,1-4.3,2.5c-0.9,1.5-0.9,3.4,0,5l6.2,10.7l-27.5,16.7   c-4.2,2.6-8.3,5.1-12.5,7.7c-3,1.9-6,3.7-8.9,5.6c-7.8,5-14.7,9.5-21.1,13.9c-3.3,2.2-6.5,4.5-9.8,6.7l-44.8-43.8L7.7,220.1   c-2.3,1.5-3,4.6-1.5,6.9c1,1.5,2.6,2.3,4.2,2.3c0.9,0,1.8-0.3,2.7-0.8l74-47.1l45.2,44.1l6.1-4.4c3.4-2.4,6.8-4.8,10.3-7.1   c6.3-4.3,13.1-8.7,20.9-13.7c2.9-1.9,5.9-3.7,8.8-5.6c4.1-2.6,8.3-5.1,12.4-7.7l25.3-15.5l2-1.2l6.1,10.6c0.9,1.5,2.5,2.5,4.3,2.5   s3.4-1,4.3-2.5l17.3-29.9C250.9,149.7,250.9,147.8,250,146.2z M228.4,168.6l-8.6-14.9H237L228.4,168.6z"/></g></svg>
 						<span>Activity Period</span>
 					</a>
 				</li>
 				{% if user.is_staff %}
 				<li>
-					<a href="#0">						
+					<a href="#0" onclick="loading()">						
 						<svg enable-background="new 0 0 32 32" height="32px" id="svg2" version="1.1" viewBox="0 0 32 32" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg"><g id="background"><rect fill="none" height="32" width="32"/></g><g id="document_x5F_text_x5F_edit"><path d="M24,14.059V5.584L18.414,0H0v32h24v-0.059c4.499-0.5,7.998-4.309,8-8.941C31.998,18.366,28.499,14.556,24,14.059z    M17.998,2.413L21.586,6h-3.588V2.413z M2,30V1.998h14v6.001h6v6.06c-1.752,0.194-3.352,0.89-4.652,1.941H4v2h11.517   c-0.412,0.616-0.743,1.289-0.994,2H4v2h10.059C14.022,22.329,14,22.661,14,23c0,2.829,1.308,5.351,3.349,7H2z M23,29.883   c-3.801-0.009-6.876-3.084-6.885-6.883c0.009-3.801,3.084-6.876,6.885-6.885c3.799,0.009,6.874,3.084,6.883,6.885   C29.874,26.799,26.799,29.874,23,29.883z M20,12H4v2h16V12z"/><g><polygon points="22,27 19,27 19,24   "/><rect height="4.243" transform="matrix(-0.7071 0.7071 -0.7071 -0.7071 56.5269 20.5858)" width="7.071" x="20.464" y="19.879"/></g></g></svg>
 						<span>User Records</span>
 					</a>
 				</li>
 				<li>
-					<a href="#0">
+					<a href="#0" onclick="loading()">
 						<svg height="48" viewBox="0 0 48 48" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h48v48h-48z" fill="none"/><path d="M25.99 6c-9.95 0-17.99 8.06-17.99 18h-6l7.79 7.79.14.29 8.07-8.08h-6c0-7.73 6.27-14 14-14s14 6.27 14 14-6.27 14-14 14c-3.87 0-7.36-1.58-9.89-4.11l-2.83 2.83c3.25 3.26 7.74 5.28 12.71 5.28 9.95 0 18.01-8.06 18.01-18s-8.06-18-18.01-18zm-1.99 10v10l8.56 5.08 1.44-2.43-7-4.15v-8.5h-3z" opacity=".9"/></svg>
 						<span>Crawling History</span>
 					</a>
@@ -113,6 +113,10 @@
 			<!--* Dashboard charts here -->
 		{% endblock %}
 	</section> 
+
+	<div id="loader" style="left:220px; width:90%">
+        <img src="{% static 'crawler/loader.gif' %}" alt="Loading...">
+    </div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script> 

@@ -192,7 +192,7 @@ if (document.getElementById("treeChart")) {
 		update(d);
 	}
 }
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 //* LINK STATUS OVER PERIOD OF TIME  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -208,18 +208,18 @@ if (activity_period_ctx) {
 		data: {
 			labels: weekNums,
 			datasets: [{
-			lineTension: 0,
-			backgroundColor: "rgba(78, 115, 223, 0.05)",
-			borderColor: "#3700b3",
-			pointRadius: 2,
-			pointBackgroundColor: "rgba(78, 115, 223, 1)",
-			pointBorderWidth: 2,
-			pointBorderColor: "rgba(78, 115, 223, 1)",
-			pointHoverRadius: 3,
-			pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-			pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-			pointHitRadius: 10,
-			data: activity,
+				lineTension: 0,
+				backgroundColor: "rgba(78, 115, 223, 0.05)",
+				borderColor: "#3700b3",
+				pointRadius: 2,
+				pointBackgroundColor: "rgba(78, 115, 223, 1)",
+				pointBorderWidth: 2,
+				pointBorderColor: "rgba(78, 115, 223, 1)",
+				pointHoverRadius: 3,
+				pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+				pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+				pointHitRadius: 10,
+				data: activity,
 			}],
 		},
 		options: {
@@ -272,3 +272,61 @@ if (activity_period_ctx) {
 	});
 }
 //* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+//* LINK STATUS OF ALL LINKS OVER PERIOD OF TIME  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+var activity_all_ctx = document.getElementById("bar_chart")
+console.log(">>>", activity)
+if (activity_all_ctx) {
+	// var active_links_period = [true, false, false, true, true, true, false, true];
+	var weekNums = [];
+	for (var i = -active_links_period.length + 1; i <= 0; i++)
+		weekNums.push(i);
+
+	var lineChart = new Chart(activity_all_ctx, {
+		type: 'bar',
+		data: {
+			labels: weekNums,
+			datasets: [{
+				label: 'No. of Active links',
+				data: active_links_period,
+				backgroundColor: '#4e73df'
+			 }, {
+				label: 'No. of Inactive links',
+				data: inactive_links_period,
+				backgroundColor: '#1cc88a'
+			 }],
+		},
+		options: {
+			scales: {
+				y: {
+					beginAtZero: true
+				},
+				xAxes: [{
+					gridLines: {
+						color: "#404040",
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Week number'
+					  },
+				   stacked: true
+				}],
+				yAxes: [{
+					gridLines: {
+						color: "#404040",
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Number of links'
+					  },
+				   stacked: true
+				}]
+			 }
+		},
+
+	});
+}
+//* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+

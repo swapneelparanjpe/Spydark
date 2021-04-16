@@ -257,6 +257,7 @@ class MiniCrawlbot:
 
         topFiveWords = display_wordcloud(wc_words)
 
+        # TODO(): Use 200 and 400 and response status codes to classify link status
         return links, topFiveWords
 
 

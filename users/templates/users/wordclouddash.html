@@ -6,7 +6,7 @@
     <h2>Word Cloud</h2><br>
     {% if form %}
         <div id="keyword" class="w-50 pl-5 pr-5 m-auto">
-            <form method="POST">         
+            <form method="POST" onchange="loading()">         
                 {% csrf_token %}
                 <fieldset class="form-group text-primary">
                     <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select Keyword</legend>
@@ -15,7 +15,7 @@
             </form>
         </div>
     {% endif %}
-
+    
     <img src="{% static 'users/wc_img.png' %}" alt="WordCloud">
     <br><br>
     

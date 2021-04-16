@@ -3,10 +3,14 @@
 {% load crispy_forms_tags %}
 {% block dashboard %} 
     
-    <h2>Activity period</h2><br>
+    <br>
+
+    {% if msg %}
+        <script>alert("{{ msg }}")</script>
+    {% endif %}
 
     <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
-        <form method="POST">         
+        <form method="POST" onchange="loading()">         
             {% csrf_token %}
             <fieldset class="form-group text-primary">
                 <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select link</legend>
@@ -15,8 +19,15 @@
         </form>
     </div>
 
+    <form method="POST" action="{% url 'activity_period' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger track-now" name="track-now" value="track-now" onclick="loading()">Track links NOW!</button>
+    </form>
+    <br><br>
+
     {% if activity %}
 
+        <h5>Percent active status: {{ percentage_activity }}%</h5>
         <br><br>
 
         <div>
@@ -24,11 +35,77 @@
         </div>
         <br><br>
 
+        <h5>Manual tracking data</h5><br>
+
+        <div class="table table-responsive">
+            <table class="table table-bordered">
+                <tr class="text-primary">
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+                {% for date, time, status in custom_activity_matrix %}
+                    <tr>
+                        <td>{{ date }}</td>
+                        <td>{{ time }}</td>
+                        <td>{{ status }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <form method="POST" action="{% url 'activity_period' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-warning stop-tracking" name="stop-tracking" value="{{ selected_link }}" onclick="loading()">Stop tracking this link</button>
+        </form>
+
+        <br><br>
+
         <script>
              var activity = JSON.parse("{{ activity }}");
-             console.log(">>>>>>>>>>", activity);
         </script>
         
+    {% endif %}
+
+    {% if active_links_period %}
+
+        <h5>Percent active status: {{ percentage_activity }}%</h5>
+        <br><br>
+
+        <div>
+            <canvas id="bar_chart"></canvas>
+        </div>
+        <br><br>
+
+        <h5>Manual tracking data</h5><br>
+
+        <div class="table table-responsive">
+            <table class="table table-bordered">
+                <tr class="text-primary">
+                    <th>Link</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+                {% for link, len_data, data in custom_activity_all_matrix %}
+                    <tr>
+                        <td rowspan="{{ len_data }}">{{ link }}</td>
+                    </tr>
+                    {% for date, time, status in data %}
+                    <tr>
+                        <td>{{ date }}</td>
+                        <td>{{ time }}</td>
+                        <td>{{ status }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </table>
+        </div>
+
+        <script>
+            var active_links_period = JSON.parse("{{ active_links_period }}");
+            var inactive_links_period = JSON.parse("{{ inactive_links_period }}");
+        </script>
     {% endif %}
 
     <br><br>

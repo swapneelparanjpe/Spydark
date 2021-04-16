@@ -101,6 +101,18 @@ ul {
     padding-top: 0.5%;
 }
 
+.track-now {
+    position: fixed;
+    bottom: 3%;
+    right:3%;
+}
+
+.stop-tracking {
+    position: fixed;
+    bottom: 3%;
+    left:20%;
+}
+
 @keyframes anim {
     0%{opacity: 0;}
     100%{opacity: 1}

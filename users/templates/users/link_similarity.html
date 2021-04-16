@@ -41,7 +41,7 @@
     <br>
         {% if select_platform_dropdown %}
             <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
-                <form method="POST">         
+                <form method="POST" onchange="loading()">         
                     {% csrf_token %}
                     <fieldset class="form-group text-primary">
                         <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select Platform</legend>
@@ -60,7 +60,7 @@
                         {{ select_keyword_dropdown|crispy }}
                     </fieldset>
                     <div class="form-group">
-                        <button class="btn btn-outline-primary" type="submit" onclick="document.forms['custom_similarity_keyword'].submit();">Get link similarity</button>
+                        <button class="btn btn-outline-primary" type="submit" onclick="loading(); document.forms['custom_similarity_keyword'].submit();">Get link similarity</button>
                     </div>
                 </form>
             </div>

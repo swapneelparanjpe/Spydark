@@ -7,7 +7,7 @@
 
         <h2>Content Similarity</h2><br>
 
-        <h4>Checking similarity for link: {{ selected_link }}</h4>
+        <h5>Checking similarity for link: {{ selected_link }}</h5>
         <br><br>
 
         <div class="table table-responsive">
@@ -33,13 +33,17 @@
 
         {% if custom_link_form %}
             <div id="keyword" class="w-75 pl-5 pr-5 m-auto">
-                <form method="POST">         
+                <form method="POST" id="custom_link_content_similarity">         
                     {% csrf_token %}
                     <fieldset class="form-group text-primary">
                         <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Enter Custom Link</legend>
                         {{ custom_link_form|crispy }}
                     </fieldset>
+                    <div class="form-group m-auto">
+                        <button class="btn btn-outline-primary" type="submit" onclick="loading(); document.forms['custom_link_content_similarity'].submit();">Go</button>
+                    </div>
                 </form>
+
             </div>
 
             <br><h2 class="w-auto pl-5 pr-5 m-auto text-primary text-center"> OR </h2><br><br>
@@ -47,7 +51,7 @@
 
         {% if select_platform_dropdown %}
             <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
-                <form method="POST">         
+                <form method="POST" onchange="loading()">         
                     {% csrf_token %}
                     <fieldset class="form-group text-primary">
                         <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select Platform</legend>
@@ -59,7 +63,7 @@
 
         {% if select_keyword_dropdown %}
             <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
-                <form method="POST">         
+                <form method="POST" onchange="loading()">         
                     {% csrf_token %}
                     <fieldset class="form-group text-light">
                         <legend class="border-bottom border-primary pb-2 mb-3 form-legend text-primary">Select Keyword/Seed-url</legend>
@@ -78,7 +82,7 @@
                         {{ select_link_dropdown|crispy }}
                     </fieldset>
                     <div class="form-group">
-                        <button class="btn btn-outline-primary" type="submit" onclick="document.forms['content_similarity_link'].submit();">Get link similarity</button>
+                        <button class="btn btn-outline-primary" type="submit" onclick="loading(); document.forms['content_similarity_link'].submit();">Get content similarity</button>
                     </div>
                 </form>
             </div>

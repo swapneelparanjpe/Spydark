@@ -20,7 +20,7 @@
             </ol>
             <div class="border-top border-primary pt-3">
                 <small class="text-muted">Want to flag more links to be tracked? 
-                    <a class="ml-2 text-primary" href="{% url 'flag_links' %}">Click here</a>
+                    <a class="ml-2 text-primary" href="{% url 'flag_links' %}" onclick="loading()">Click here</a>
                 </small>
             </div>
             <br><br>
@@ -36,7 +36,7 @@
                         {{ flag_links_form|crispy }}
                     </fieldset>
                     <div class="form-group">
-                        <button class="btn btn-outline-primary" type="submit" onclick="document.forms['flag_links'].submit();">Flag selected links</button>
+                        <button class="btn btn-outline-primary" type="submit" onclick="loading(); document.forms['flag_links'].submit();">Flag selected links</button>
                     </div>
                 </form>
             </div>
@@ -46,5 +46,6 @@
     {% endif %}
 
     <br><br>
+
     
 {% endblock dashboard %}

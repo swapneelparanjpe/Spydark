@@ -54,7 +54,7 @@ class ContentSimilarityKeywordSelect(forms.Form):
 class ContentSimilarityLinkSelect(forms.Form):
     def __init__(self, link_choices, *args, **kwargs):
         super(ContentSimilarityLinkSelect, self).__init__(*args, **kwargs)
-        self.fields['link_choice'] = forms.ChoiceField(label=False, choices=link_choices, widget=forms.Select(attrs={'onchange': 'form.submit();'}), required=False)
+        self.fields['link_choice'] = forms.ChoiceField(label=False, choices=link_choices, widget=forms.Select, required=False)
 
 class ContentSimilarityCustomLink(forms.Form):
     custom_link = forms.URLField(label=False, required=False)
