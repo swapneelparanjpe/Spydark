@@ -92,21 +92,50 @@
 
 	<section class="page-content">
 
-		<form action="{% url 'dashboard' %}" method="POST", id="close-btn">
-			{% csrf_token %}
-			<button type="button" class="close" aria-label="Close" onclick="document.forms['close-btn'].submit();" data-toggle="tooltip" data-placement="top" title="Clear last crawl">
-				<span>&#10060;</span>
-			</button>
-		</form>
+		{% if not document %}
+			<form action="{% url 'dashboard' %}" method="POST", id="close-btn">
+				{% csrf_token %}
+				<button type="button" class="close" aria-label="Close" onclick="document.forms['close-btn'].submit();" data-toggle="tooltip" data-placement="top" title="Clear last crawl">
+					<span>&#10060;</span>
+				</button>
+			</form>
+		{% endif %}
 
 		
 		{% if links %}		
 			<h2>Results from previous crawling</h2><br>
-			<ol>
-				{% for link in links %}
-					<li class="text-primary"><a target="_blank" href="{{ link }}">{{ link }}</a></li>
-				{% endfor %}
-			</ol>
+			<form action="{% url 'dashboard' %}" method="POST">
+				{% csrf_token %}
+				<ol>
+					{% for link in links %}
+						<li class="text-primary">
+							<button type="submit" class="text-left" name="show_link_data" value="{{ link }}">{{ link }}</button>
+						</li>
+					{% endfor %}
+				</ol>
+			</form>
+		{% endif %}
+
+		{% if document %}
+			<a type="button" class="close" href="{% url 'dashboard' %}" aria-label="Close" data-toggle="tooltip" data-placement="top" title="Close this data">
+				<span>&#10005;</span>
+			</a>
+			<br><br>
+			<div class="table table-responsive">
+				<table class="table table-bordered">
+					<tr class="text-primary">
+						<th>Attribute</th>
+						<th>Value</th>
+					</tr>
+					{% for attribute, value in document %}
+						<tr>
+							<td>{{ attribute }}</td>
+							<td>{{ value }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+			<br><br>
 		{% endif %}
 
 		{% block dashboard %}

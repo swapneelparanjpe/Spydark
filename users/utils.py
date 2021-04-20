@@ -9,6 +9,7 @@ from wordcloud import WordCloud, STOPWORDS
 from pymongo import MongoClient
 import re
 import json
+from googlesearch import search
 from anytree import Node
 from anytree.search import find_by_attr
 from anytree.exporter import JsonExporter
@@ -19,6 +20,10 @@ def connect_mongodb(database, keyword):
     coll = db[keyword]
     return coll
 
+def get_link_data(database, collection, link):
+    coll = connect_mongodb(database, collection)
+    document = coll.find_one({"Link":link})
+    return list(document.items())[1:]
 
 def addhistory(user, data):
     coll = connect_mongodb("user-history", user)
@@ -390,6 +395,65 @@ class SurfaceURL:
                     idx += 1
             self.visitedcoll.insert_one({"seed-url":self.curr_link})
         
+        topFiveWords = display_wordcloud(wc_words)
+        
+        return links, topFiveWords
+
+
+class Google:
+
+    def __init__(self, keyword, depth):
+        self.keyword = keyword
+        self.depth = depth
+        self.visitedcoll = connect_mongodb("googledb", "keywords-visited")
+        self.coll = connect_mongodb("googledb", self.keyword)
+
+    def googlecrawl(self):
+
+        visited = False
+        for _ in self.visitedcoll.find({"keyword":self.keyword}):
+            visited = True
+
+        links = []
+        wc_words = open('users/static/users/wc_words.txt', 'w', encoding='utf-8')
+
+        if visited:
+            for x in self.coll.find():
+                links.append(x["Link"])
+                try:
+                    wc_words.write(x["Page content"] + "\n\n")
+                except Exception:
+                    pass
+        
+        else:
+            
+            url = "https://google.com/search?q={}".format('+'.join(self.keyword.split(' ')))
+            links_found_on_google = list(search(self.keyword, num=25*(self.depth), stop=25*(self.depth), pause=4.0))
+            links = [url] + links_found_on_google
+
+            parent = None
+            link_count = 0
+            for link in links:
+                try:
+                    print("Parsing link:", link)
+                    source = requests.get(link).text
+                    curr_page = BeautifulSoup(source, 'lxml')
+                    title = curr_page.find('title').text
+                    text = ' '.join(curr_page.text.split())
+                    wc_words.write(text + "\n\n")
+                    success = True
+                except Exception:
+                    success = False
+                if success:
+                    self.coll.insert_one({"Link":link, "Title":title, "Page content":text, "Parent link":parent, "Successfully parsed":success})
+                else:
+                    self.coll.insert_one({"Link":link, "Parent link":parent, "Successfully parsed":success})
+                
+                link_count += 1
+                if link_count == 1:
+                    parent = url
+            self.visitedcoll.insert_one({"keyword":self.keyword})
+
         topFiveWords = display_wordcloud(wc_words)
         
         return links, topFiveWords

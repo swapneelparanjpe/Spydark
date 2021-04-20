@@ -23,8 +23,9 @@ class SearchKeyword(forms.Form):
 
 class SearchKeywordPlt(forms.Form):
     p_choices = [
-        (1, 'Instagram'),
-        (2, 'Twitter'),
+        (1, 'Google'),
+        (2, 'Instagram'),
+        (3, 'Twitter'),
     ]
     keyword = forms.CharField(label='Keyword', help_text='Enter keyword')
     platform = forms.CharField(label='Platform', help_text='Choose platform to crawl on', widget=forms.Select(choices=p_choices))

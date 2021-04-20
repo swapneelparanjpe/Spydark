@@ -3,7 +3,7 @@ from django.contrib import messages
 from .forms import UserRegisterForm, SearchURL, SearchKeyword, SearchKeywordPlt, CrawlDropdownSelect, SimilarityPlatformSelect, LinkSimilarityKeywordSelect, ContentSimilarityKeywordSelect, ContentSimilarityLinkSelect, ContentSimilarityCustomLink, FlagLinksToTrack, LinkActivityPeriod
 from django.contrib.auth.decorators import login_required
 
-from .utils import connect_mongodb, addhistory, get_images, get_text, generate_wordcloud_dynamically, Dashboard, SurfaceURL, Instagram, Twitter
+from .utils import connect_mongodb, get_link_data, addhistory, get_images, get_text, generate_wordcloud_dynamically, Dashboard, SurfaceURL, Google, Instagram, Twitter
 from .minicrawlbot import MiniCrawlbot
 from .img_detect import detect_object
 from .text_process import detect_text, compare_page_content
@@ -60,18 +60,24 @@ def dashboard(request):
     global visited_links_choices
 
     if request.method == "POST":
-        database = None
-        collection = None
-        iterativeCrawledKeywords = []
-        crawled_dropdown_choices = []
+        if "show_link_data" in request.POST:
+            link = request.POST["show_link_data"]
+            document = get_link_data(database, collection, link)
+            return render(request, 'users/dashboard.html', {'title':"Dashboard", "document":document})
 
-        platform_choice = None
-        selected_database = None
-        visited_keywords_choices = []
+        else:
+            database = None
+            collection = None
+            iterativeCrawledKeywords = []
+            crawled_dropdown_choices = []
 
-        collection_choice = None
-        selected_collection = None
-        visited_links_choices = []
+            platform_choice = None
+            selected_database = None
+            visited_keywords_choices = []
+
+            collection_choice = None
+            selected_collection = None
+            visited_links_choices = []
         
     if database is None or collection is None:
         return render(request, 'users/404.html', {'title':"Dashboard"})
@@ -84,6 +90,9 @@ def dashboard(request):
 def flag_links(request):        
     if database is None or collection is None:
         return render(request, 'users/404.html', {'title':"Dashboard"})
+    if database != "dark-url-db" and database != "dark-key-db":
+        return render(request, 'users/flag_links.html', {'title':"Flag to Track", 'service_not_valid':True})
+
     dash = Dashboard()
     unflagged_link_choices, current_status = dash.get_unflagged_links(database, collection)
 
@@ -472,12 +481,18 @@ def crawled(request):
             iterativeCrawledKeywords = []
 
         if platform == 1:
+            ggl = Google(keyword, depth)
+            links, topFiveWords = ggl.googlecrawl()
+            database = "googledb"
+            data = {"Platform": "Google", "Keyword": keyword, "Depth":depth}
+
+        if platform == 2:
             ig = Instagram(keyword, depth)
             links, topFiveWords = ig.instacrawl()
             database = "instagramdb"
             data = {"Platform": "Instagram", "Keyword": keyword, "Depth":depth}
             
-        if platform == 2:
+        if platform == 3:
             tweet = Twitter(keyword, depth)
             links, topFiveWords = tweet.twittercrawl()
             database = "twitterdb"
