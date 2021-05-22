@@ -1,6 +1,9 @@
 {% extends "crawler/base.html" %}
 {% load static %}
 {% block content %}
+
+    <h4>Obtained {{ no_of_links }} results</h4>
+    <br>
     <ol>
         {% for link in links %}
             <li class="text-primary"><a target="_blank" href="{{ link }}">{{ link }}</a></li>

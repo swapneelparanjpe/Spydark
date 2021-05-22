@@ -11,6 +11,9 @@ from bs4 import BeautifulSoup
 from .utils import connect_mongodb, display_wordcloud
 import os
 
+TORCC_HASH_PASSWORD = "<torcc_password>"
+TORCC_HASH_PASSWORD = "ToRhCPw17$"
+
 class MiniCrawlbot:
     
     def __init__(self):
@@ -38,7 +41,7 @@ class MiniCrawlbot:
 
     def renew_tor_ip(self):
         with Controller.from_port(port = 9051) as controller:
-            controller.authenticate(password="ToRhCPw17$")
+            controller.authenticate(password=TORCC_HASH_PASSWORD)
             controller.signal(Signal.NEWNYM)
 
     def is_alive(self, url):
@@ -191,6 +194,10 @@ class MiniCrawlbot:
                                 print (str(countlink) +"{:<5}".format(" ")+ link, end= "\n\n" )
                                 countlink += 1
                                 no_of_links += 1
+
+                            # Allow max 100 links from each site    
+                            if no_of_links > 100:
+                                break
 
                         links_per_page.append(no_of_links)
 

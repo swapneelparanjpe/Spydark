@@ -179,10 +179,11 @@ def link_similarity(request):
         platform_choices = [
                 (0,"--Select option--"),
                 (1,"Surface (URL)"),
-                (2,"Instagram"),
-                (3,"Twitter"),
-                (4,"Dark web (URL)"),
-                (5,"Dark web (Keyword)")
+                (2,"Google"),
+                (3,"Instagram"),
+                (4,"Twitter"),
+                (5,"Dark web (URL)"),
+                (6,"Dark web (Keyword)")
             ]
         if request.method =='POST':
             select_platform_dropdown = SimilarityPlatformSelect(platform_choices, request.POST)
@@ -253,8 +254,9 @@ def content_similarity(request):
     platform_choices = [
             (0,"--Select option--"),
             (1,"Surface (URL)"),
-            (4,"Dark web (URL)"),
-            (5,"Dark web (Keyword)")
+            (2,"Google"),
+            (3,"Dark web (URL)"),
+            (4,"Dark web (Keyword)")
         ]
     if request.method =='POST':
 
@@ -549,7 +551,7 @@ def crawled(request):
         crawled_dropdown_choices.append((count, "All words together"))
 
 
-    return render(request, 'users/crawled.html', {'links':links, 'time_elapsed':time_elapsed, 'isIterative':isIterative, 'topWords':topWords, 'urlSub1':urlSub1, 'urlSub2':urlSub2, 'title':"Crawling reults"})
+    return render(request, 'users/crawled.html', {'links':links, 'no_of_links':len(links), 'time_elapsed':time_elapsed, 'isIterative':isIterative, 'topWords':topWords, 'urlSub1':urlSub1, 'urlSub2':urlSub2, 'title':"Crawling reults"})
     
 
 @login_required

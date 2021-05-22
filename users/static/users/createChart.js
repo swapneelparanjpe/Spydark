@@ -197,7 +197,6 @@ if (document.getElementById("treeChart")) {
 
 //* LINK STATUS OVER PERIOD OF TIME  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 var activity_period_ctx = document.getElementById("line_chart")
-console.log(">>>", activity)
 if (activity_period_ctx) {
 	var weekNums = [];
 	for (var i = -activity.length + 1; i <= 0; i++)
@@ -278,7 +277,6 @@ if (activity_period_ctx) {
 var activity_all_ctx = document.getElementById("bar_chart")
 console.log(">>>", activity)
 if (activity_all_ctx) {
-	// var active_links_period = [true, false, false, true, true, true, false, true];
 	var weekNums = [];
 	for (var i = -active_links_period.length + 1; i <= 0; i++)
 		weekNums.push(i);

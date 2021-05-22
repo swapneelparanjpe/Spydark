@@ -14,8 +14,14 @@ from anytree import Node
 from anytree.search import find_by_attr
 from anytree.exporter import JsonExporter
 
+INSTAGRAM_USERNAME = "<username>"
+INSTAGRAM_PASSWORD = "<password>"
+
+MONGODB_CONNECTION = "<driver_code>"
+MONGODB_CONNECTION = "mongodb+srv://admin_db:kryptonite_DB12@crawling-cluster.exrzi.mongodb.net/surfacedb?retryWrites=true&w=majority"
+
 def connect_mongodb(database, keyword):
-    client = MongoClient("mongodb+srv://admin_db:kryptonite_DB12@crawling-cluster.exrzi.mongodb.net/surfacedb?retryWrites=true&w=majority")
+    client = MongoClient(MONGODB_CONNECTION)
     db = client[database]
     coll = db[keyword]
     return coll
@@ -198,14 +204,18 @@ class Dashboard:
             collection = "seed-urls-visited"
             field = "seed-url"
         elif platform_choice == "2":
-            database = "instagramdb"
+            database = "googledb"
             collection = "keywords-visited"
             field = "keyword"
         elif platform_choice == "3":
-            database = "twitterdb"
+            database = "instagramdb"
             collection = "keywords-visited"
             field = "keyword"
         elif platform_choice == "4":
+            database = "twitterdb"
+            collection = "keywords-visited"
+            field = "keyword"
+        elif platform_choice == "5":
             database = "dark-url-db"
             collection = "seed-urls-visited"
             field = "seed-url"
@@ -435,8 +445,8 @@ class Google:
             link_count = 0
             for link in links:
                 try:
-                    print("Parsing link:", link)
-                    source = requests.get(link).text
+                    print(link_count, "->", link)
+                    source = requests.get(link, timeout = 20).text
                     curr_page = BeautifulSoup(source, 'lxml')
                     title = curr_page.find('title').text
                     text = ' '.join(curr_page.text.split())
@@ -494,10 +504,10 @@ class Instagram:
             for input_field in input_fields:
                 name = input_field.get_attribute("name")
                 if name == 'username':
-                    input_field.send_keys("s_kurumkar99")
+                    input_field.send_keys(INSTAGRAM_USERNAME)
                     count += 1
                 elif name == 'password':
-                    input_field.send_keys("Sarveshkur99")
+                    input_field.send_keys(INSTAGRAM_PASSWORD)
                     count += 1
                 if count == 2:
                     break
