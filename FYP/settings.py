@@ -31,8 +31,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'launcher.apps.LauncherConfig',
     'users.apps.UsersConfig',
     'crawler.apps.CrawlerConfig',
+    'filters.apps.FiltersConfig',
+    'dashboard.apps.DashboardConfig',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -123,7 +126,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "crawler/static/crawler"),
+    os.path.join(BASE_DIR, "launcher/static/launcher"),
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

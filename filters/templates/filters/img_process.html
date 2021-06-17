@@ -1,0 +1,14 @@
+{% extends "launcher/base.html" %}
+{% load static %}
+{% block content %}
+    <h1>Image filtered links</h1>
+    <br>
+    <h4>Obtained {{ no_of_links }} results</h4>
+    <br>
+    <ol>
+        {% for related_link in related_links %}
+            <li class="text-primary"><a target="_blank" href="{{ related_link }}">{{ related_link }}</a></li>
+        {% endfor %}
+    </ol>
+    <br><br>
+{% endblock content %}

@@ -1,0 +1,96 @@
+{% extends "crawler/dashboard.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block dashboard %} 
+    
+    {% if cs_matrix %}
+
+        <h2>Content Similarity</h2><br>
+
+        <h5>Checking similarity for link: {{ selected_link }}</h5>
+        <br><br>
+
+        <div class="table table-responsive">
+            <table class="table table-bordered">
+                <tr class="text-primary">
+                    <th>Link</th>
+                    <th>Percentage Similarity</th>
+                    <th>Database</th>
+                    <th>Collection</th>
+                </tr>
+                {% for link, percentage, database, collection  in cs_matrix %}
+                    <tr>
+                        <td>{{ link }}</td>
+                        <td class="c-align">{{ percentage }}%</td>
+                        <td>{{ database }}</td>
+                        <td>{{ collection }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    {% else %}
+
+        {% if custom_link_form %}
+            <div id="keyword" class="w-75 pl-5 pr-5 m-auto">
+                <form method="POST" id="custom_link_content_similarity">         
+                    {% csrf_token %}
+                    <fieldset class="form-group text-primary">
+                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Enter Custom Link</legend>
+                        {{ custom_link_form|crispy }}
+                    </fieldset>
+                    <div class="form-group m-auto">
+                        <button class="btn btn-outline-primary" type="submit" onclick="loading(); document.forms['custom_link_content_similarity'].submit();">Go</button>
+                    </div>
+                </form>
+
+            </div>
+
+            <br><h2 class="w-auto pl-5 pr-5 m-auto text-primary text-center"> OR </h2><br><br>
+        {% endif %}
+
+        {% if select_platform_dropdown %}
+            <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
+                <form method="POST" onchange="loading()">         
+                    {% csrf_token %}
+                    <fieldset class="form-group text-primary">
+                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend">Select Platform</legend>
+                        {{ select_platform_dropdown|crispy }}
+                    </fieldset>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if select_keyword_dropdown %}
+            <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
+                <form method="POST" onchange="loading()">         
+                    {% csrf_token %}
+                    <fieldset class="form-group text-light">
+                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend text-primary">Select Keyword/Seed-url</legend>
+                        {{ select_keyword_dropdown|crispy }}
+                    </fieldset>
+                </form>
+            </div>
+        {% endif %}
+        
+        {% if select_link_dropdown %}
+            <div id="link" class="w-auto pl-5 pr-5 m-auto">
+                <form method="POST" id="content_similarity_link">         
+                    {% csrf_token %}
+                    <fieldset class="form-group text-light">
+                        <legend class="border-bottom border-primary pb-2 mb-3 form-legend text-primary">Select Link</legend>
+                        {{ select_link_dropdown|crispy }}
+                    </fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary" type="submit" onclick="loading(); document.forms['content_similarity_link'].submit();">Get content similarity</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+
+        
+    {% endif %}
+
+    <br><br>
+    
+{% endblock dashboard %}

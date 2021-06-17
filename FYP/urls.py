@@ -16,32 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from users import views as user_views
-from django.contrib.auth import views as auth_views
+
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    path('', include('crawler.urls')),
     path('admin/', admin.site.urls),
-    path('register/', user_views.register, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
-    path('password-reset/', auth_views.PasswordResetView.as_view(template_name='users/password_reset.html'), name='password_reset'),
-    path('password-reset/done/', auth_views.PasswordChangeDoneView.as_view(template_name='users/password_reset_done.html'), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='users/password_reset_confirm.html'), name='password_reset_confirm'),
-    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'), name='password_reset_complete'),
-    path('welcome/', user_views.welcome, name='welcome'),
-    path('dashboard/', user_views.dashboard, name='dashboard'),
-    path('surface/', user_views.surface, name='surface'),
-    path('dark/', user_views.dark, name='dark'),
-    path('crawled/', user_views.crawled, name='crawled'),
-    path('img_processing/', user_views.img_processing, name='img_processing'),
-    path('text_processing/', user_views.text_processing, name='text_processing'),
-    path('dashboard/flag_links/', user_views.flag_links, name='flag_links'),
-    path('dashboard/word_cloud/', user_views.word_cloud, name='word_cloud'),
-    path('dashboard/active_links/', user_views.active_links, name='active_links'),
-    path('dashboard/link_similarity/', user_views.link_similarity, name='link_similarity'),
-    path('dashboard/link_tree/', user_views.link_tree, name='link_tree'),
-    path('dashboard/content_similarity/', user_views.content_similarity, name='content_similarity'),
-    path('dashboard/activity_period/', user_views.activity_period, name='activity_period'),
+    path('', include('launcher.urls')),
+    path('', include('users.urls')),
+    path('', include('crawler.urls')),
+    path('', include('filters.urls')),
+    path('', include('dashboard.urls')),
 ]
 urlpatterns += staticfiles_urlpatterns()

@@ -27,10 +27,10 @@ _Save the above weights file at /YOLOv3/fyp.weights_
 ### 3) Enter username and password for social media login in /users/utils.py
 <br>
 
-### 4) Create mongodb atlas account and enter driver code in in /users/utils.py
+### 4) Create mongodb atlas account and enter driver code in /users/utils.py
 <br>
 
-### 5) Download Tor browser and configure Torcc hash pashword. Use the password in /users/minicrawlbot.py
+### 5) Download Tor browser and configure Torcc hash password. Use the password in /users/darkweb_crawler.py
 <br>
 
 ### 6) Download latest chromedriver (for selenium) and save in /chromedriver_win32

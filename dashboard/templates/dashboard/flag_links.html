@@ -1,0 +1,60 @@
+{% extends "crawler/dashboard.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block dashboard %} 
+
+    {% if not service_not_valid %}
+
+        {% if no_links_found %}
+            <br><br><br><br><br>
+            <h2>Looks like all links obtained for this crawl are already flagged to track! &#128515;</h2>
+
+        {% else %}
+
+            {% if is_flag_done %}
+
+                <h2>Following links are flagged to be tracked</h2><br>
+                <ol class="ml-5">
+                    {% for flagged_link in flagged_links %}
+                        <li class="text-primary">{{ flagged_link }}</li>
+                    {% endfor %}
+                </ol>
+                <div class="border-top border-primary pt-3">
+                    <small class="text-muted">Want to flag more links to be tracked? 
+                        <a class="ml-2 text-primary" href="{% url 'flag_links' %}" onclick="loading()">Click here</a>
+                    </small>
+                </div>
+                <br><br>
+
+            {% else %}
+
+                <div id="keyword" class="w-auto pl-5 pr-5 m-auto">
+                    <form method="POST" id = "flag_links">         
+                        {% csrf_token %}
+                        <fieldset class="form-group text-primary">
+                            <legend class="border-bottom border-primary pb-2 mb-3 form-legend text-primary">Flag links to track</legend>
+                            <br>
+                            {{ flag_links_form|crispy }}
+                        </fieldset>
+                        <div class="form-group">
+                            <button class="btn btn-outline-primary" type="submit" onclick="loading(); document.forms['flag_links'].submit();">Flag selected links</button>
+                        </div>
+                    </form>
+                </div>
+                
+            {% endif %}
+
+            
+        {% endif %}
+    
+    {% else %}
+
+        <h2>Service not valid</h2><br><br>
+        <img width="90%" src="{% static 'dashboard/oops.gif' %}" alt="Oops image"/>
+    
+    {% endif %}
+
+    <br><br>
+
+    
+{% endblock dashboard %}
