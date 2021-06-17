@@ -49,14 +49,21 @@ def addhistory(user, data):
         coll.find_one_and_delete({})
     coll.insert_one(history)
 
-def display_wordcloud(wc_words):
+def display_wordcloud(wc_words, isLink = False):
     print("Generating Wordcloud...")
     stopwords = set(STOPWORDS)
     wordc = WordCloud(background_color="white", width=700, height=350, stopwords = stopwords)
     wc_words.seek(0)
-    wordc.generate(open('crawler/static/crawler/wc_words.txt', encoding='utf-8').read())
+    
+    if isLink:
+        wordc.generate(open('crawler/static/crawler/wc_words_link.txt', encoding='utf-8').read())
+        wordc.to_file('crawler/static/crawler/wc_img_link.png')
+    else:
+        wordc.generate(open('crawler/static/crawler/wc_words.txt', encoding='utf-8').read())
+        wordc.to_file('crawler/static/crawler/wc_img.png')
+
     topKeyValuePairs = list(wordc.words_.items())[:5]
-    wordc.to_file('crawler/static/crawler/wc_img.png')
+
     wc_words.flush()
     wc_words.close()
 

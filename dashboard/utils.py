@@ -182,9 +182,9 @@ class Dashboard:
         coll = connect_mongodb(database, collection)
         document = coll.find_one({"Link":link})
         try:
-            wc_words = open('crawler/static/crawler/wc_words.txt', 'w', encoding='utf-8')
+            wc_words = open('crawler/static/crawler/wc_words_link.txt', 'w', encoding='utf-8')
             wc_words.write(document["Page content"])
-            _ = display_wordcloud(wc_words)
+            _ = display_wordcloud(wc_words, isLink=True)
             image_urls = coll.find_one({"Link":link})["Images"]
         except Exception:
             print("Page was not found")

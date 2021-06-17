@@ -275,7 +275,6 @@ if (activity_period_ctx) {
 
 //* LINK STATUS OF ALL LINKS OVER PERIOD OF TIME  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 var activity_all_ctx = document.getElementById("bar_chart")
-console.log(">>>", activity)
 if (activity_all_ctx) {
 	var weekNums = [];
 	for (var i = -active_links_period.length + 1; i <= 0; i++)
