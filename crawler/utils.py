@@ -11,10 +11,9 @@ from gridfs import GridFS
 from googlesearch import search
 import re
 
-
+# TODO: Add constants
 INSTAGRAM_USERNAME = "<username>"
 INSTAGRAM_PASSWORD = "<password>"
-
 MONGODB_CONNECTION = "<driver_code>"
 CHROMEDRIVER_PATH = "chromedriver_win32\\chromedriver.exe"
 

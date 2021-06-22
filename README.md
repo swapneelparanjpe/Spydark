@@ -1,6 +1,5 @@
-# SpyDark webiste demo
+# Spydark webiste demo
 ### Watch the quick introduction [here](https://drive.google.com/file/d/16VAdNi0PbEuygGOfaDo-79JaJmKR4D1U/view?usp=sharing) 
-<br>
 
 ### Watch the complete demo [here](https://drive.google.com/file/d/1zK4BMiNKIx8BeAub1K6BK8LZIEQkiu56/view?usp=sharing) 
 <br>
@@ -23,7 +22,7 @@ _Download the 'popular' collection_
 <br>
 
 ### 3) Download the weights file from [here](https://drive.google.com/file/d/195hwdBwI8qd4erD9whi64R4uTWuz9MvV/view?usp=sharing)
-_Save the above weights file at /YOLOv3/fyp.weights_
+_Save the above weights file at /YOLOv3/spydark_yolo.weights_
 <br>
 <br>
 

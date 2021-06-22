@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from .utils import connect_mongodb, connect_gridfs, display_wordcloud
 import os
 
+# TODO: Add constants
 TORCC_HASH_PASSWORD = "<torcc_password>"
 TOR_BROWSER_PATH = "<path>"
 

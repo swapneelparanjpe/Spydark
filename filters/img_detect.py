@@ -7,9 +7,9 @@ import os.path as path
 from urllib.parse import quote
 from base64 import b64encode
 
-names = path.abspath(path.join(__file__ ,"../../YOLOv3/fyp.names"))
-weights = path.abspath(path.join(__file__ ,"../../YOLOv3/fyp.weights"))
-cfg = path.abspath(path.join(__file__ ,"../../YOLOv3/fyp.cfg"))
+names = path.abspath(path.join(__file__ ,"../../YOLOv3/spydark_yolo.names"))
+weights = path.abspath(path.join(__file__ ,"../../YOLOv3/spydark_yolo.weights"))
+cfg = path.abspath(path.join(__file__ ,"../../YOLOv3/spydark_yolo.cfg"))
 
 net = cv2.dnn.readNet(weights, cfg)
 layer_names = net.getLayerNames()   # returns a list of all layer names (conv,bn,relu,yolo, etc)
