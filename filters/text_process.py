@@ -55,9 +55,9 @@ def compare_page_content(text1):
     text1 = [lemmatizer_custom.lemmatize(word) for word in text1 if word not in set(stopwords.words('english'))]
     counter1 = Counter(text1)
 
-    databases = ['surfacedb']
-    collections = ['seed-urls-visited']
-    fields = ['seed-url']
+    databases = ['surfacedb', 'googledb', 'instagramdb', 'twitterdb', 'dark-key-db', 'dark-url-db']
+    collections = ['seed-urls-visited', 'keywords-visited', 'keywords-visited', 'keywords-visited', 'keywords-visited', 'seed-urls-visited']
+    fields = ['seed-url', 'keyword', 'keyword', 'keyword', 'keyword', 'seed-url']
 
     cs_matrix = []
 

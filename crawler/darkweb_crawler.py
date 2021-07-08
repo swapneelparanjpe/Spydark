@@ -102,7 +102,7 @@ class DarkWebCrawler:
         visited = False
 
         if isKeyword:
-            for _ in visitedcoll.find({"Keyword":keyUrl}):
+            for _ in visitedcoll.find({"keyword":keyUrl}):
                 visited = True
         else:
             for _ in visitedcoll.find({"seed-url":keyUrl}):
@@ -297,7 +297,7 @@ class DarkWebCrawler:
                 time.sleep(self.wait_time)
                 
             if isKeyword:
-                visitedcoll.insert_one({"Keyword":keyUrl})
+                visitedcoll.insert_one({"keyword":keyUrl})
             else:
                 visitedcoll.insert_one({"seed-url":keyUrl})
             
