@@ -150,7 +150,10 @@ class SurfaceURL:
                     text = ' '.join(curr_page.text.split())
                     wc_words.write(text + "\n\n")
                     driver.get(link)
-                    images = list(set([(str(element.get_attribute('src')), False) for element in driver.find_elements_by_tag_name('img')]))
+                    imgs = list(set([str(element.get_attribute('src')) for element in driver.find_elements_by_tag_name('img')]))
+                    images = []
+                    for img in imgs:
+                        images.append([img, False])
                     store_images_in_db("surfacedb", images)
                     success = True
                 except Exception as e:
@@ -224,7 +227,10 @@ class Google:
                     text = ' '.join(curr_page.text.split())
                     wc_words.write(text + "\n\n")
                     driver.get(link)
-                    images = list(set([(element.get_attribute('src'), False) for element in driver.find_elements_by_tag_name('img')]))
+                    imgs = list(set([element.get_attribute('src') for element in driver.find_elements_by_tag_name('img')]))
+                    images = []
+                    for img in imgs:
+                        images.append([img, False])
                     store_images_in_db("googledb", images)
                     success = True
                 except Exception:
@@ -317,8 +323,11 @@ class Instagram:
                     driver.get(link)
                     account = driver.find_elements_by_xpath("//*[@id='react-root']/section/main/div/div[1]/article/div[3]/div[1]/ul/div/li/div/div/div[2]/h2/div/span/a")[0].get_attribute('href')
                     caption = driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div[1]/article/div[3]/div[1]/ul/div/li/div/div/div[2]/span").text.split("#")[0]
-                    image = list(set([(str(driver.find_element_by_class_name("FFVAD").get_attribute('src')), False)]))
-                    store_images_in_db("instagramdb", image)
+                    imgs = list(set([str(driver.find_element_by_class_name("FFVAD").get_attribute('src'))]))
+                    images = []
+                    for img in imgs:
+                        images.append([img, False])
+                    store_images_in_db("instagramdb", images)
                     try:
                         location = driver.find_element_by_xpath("//*[@id='react-root']/section/main/div/div[1]/article/header/div[2]/div[2]/div[2]/a").text
                     except Exception:
@@ -330,7 +339,7 @@ class Instagram:
                 except Exception:
                     print("Parsing failed: ", link)
                     continue
-                self.coll.insert_one({"Link":link, "Posted by":account, "Location":location, "Images":image, "Caption":caption, "Hashtags":post_hashtags})
+                self.coll.insert_one({"Link":link, "Posted by":account, "Location":location, "Images":images, "Caption":caption, "Hashtags":post_hashtags})
             driver.quit()
             self.visitedcoll.insert_one({"keyword":self.keyword})
 
@@ -383,7 +392,7 @@ class Twitter:
 
             for link in links:
                 post_hashtags = []
-                images = [] 
+                imgs = [] 
                 try:
                     driver.get(link)
                     time.sleep(3)
@@ -391,7 +400,7 @@ class Twitter:
                     img_elements = driver.find_elements_by_tag_name("img")
                     for image in img_elements:
                         if image.get_attribute("alt") == "Image":
-                            images.append((str(image.get_attribute("src")), False))
+                            imgs.append(str(image.get_attribute("src")))
                     caption_element = driver.find_element_by_xpath("//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[2]/div/section/div/div/div[1]/div/div/article/div/div/div/div[3]/div[1]/div/div")
                     caption = caption_element.text
                     for span in caption_element.find_elements_by_xpath("./span"):
@@ -399,7 +408,10 @@ class Twitter:
                         if len(hashtag) == 1:
                             post_hashtags.append(hashtag[0])
                             wc_words.write(hashtag[0] + "\n")
-                    images = list(set(images))
+                    imgs = list(set(imgs))
+                    images = []
+                    for img in imgs:
+                        images.append([img, False])
                     store_images_in_db("twitterdb", images)
                 except Exception:
                     print("Parsing failed: ", link)

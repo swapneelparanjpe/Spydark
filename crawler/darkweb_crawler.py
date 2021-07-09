@@ -57,10 +57,10 @@ class DarkWebCrawler:
             print(" Page not found..." + url)
             return False, None
         except Exception as err:
-            print("Page not found..." + url )
+            print("Page not found..." + url)
             return False, None
         else:
-            print("Page has found....")     
+            print("Page found...." + url)     
             return True, response
 
 
@@ -264,14 +264,19 @@ class DarkWebCrawler:
                     text = ' '.join(curr_page.text.split())
                     wc_words.write(text + "\n\n")
 
-                    images = [(str(element['src']), False) for element in curr_page.findAll('img')]
-                    for i in range(len(images)):
-                        img_link = link if (link[len(link)-1] != "/") else link[:len(link)-1]
-                        if images[i][0][0] == "/":
-                            images[i][0] = img_link + images[i][0]
-                        elif images[i][0][0:3] == "../":
-                            images[i][0] = img_link[:img_link[:img_link.rfind('/')].rfind('/')] + images[i][0][2:]
-                    images = list(set(images))
+                    imgs = [str(element['src']) for element in curr_page.findAll('img')]
+                    base_url = link if (link[len(link)-1] != "/") else link[:len(link)-1]
+                    for i in range(len(imgs)):
+                        if imgs[i][0] == "/":
+                            imgs[i] = base_url + imgs[i]
+                        elif imgs[i][0:3] == "../":
+                            imgs[i] = base_url[:base_url[:base_url.rfind('/')].rfind('/')] + imgs[i][2:]
+                        else:
+                            imgs[i] = base_url + "/" + imgs[i]
+                    imgs = list(set(imgs))
+                    images = []
+                    for img in imgs:
+                        images.append([img, False])
                     self.store_images_in_db(isKeyword, images)
                     active = True
                 except Exception:
