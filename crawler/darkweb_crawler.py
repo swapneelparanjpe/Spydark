@@ -125,7 +125,7 @@ class DarkWebCrawler:
             print("Tor Browser started")
             
             if isKeyword:
-                url = 'http://msydqstlz2kzerdg.onion/search?q=' + query
+                url = 'https://ahmia.fi/search/?q=' + query
             else:
                 url = keyUrl
 
@@ -143,7 +143,7 @@ class DarkWebCrawler:
                 print("HEREEEE", links_found, len(links_found))   
 
             if isKeyword:
-                links = ["http://msydqstlz2kzerdg.onion/"]
+                links = ["https://ahmia.fi/"]
             else:
                 links = [keyUrl]
 

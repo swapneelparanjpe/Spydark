@@ -13,7 +13,7 @@ cfg = path.abspath(path.join(__file__ ,"../../YOLOv3/spydark_yolo.cfg"))
 
 net = cv2.dnn.readNet(weights, cfg)
 layer_names = net.getLayerNames()   # returns a list of all layer names (conv,bn,relu,yolo, etc)
-output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()] # creates list of yolo layers using indices of yolo layers
+output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()] # creates list of yolo layers using indices of yolo layers
 
 
 def detect_object(fs, filename):
